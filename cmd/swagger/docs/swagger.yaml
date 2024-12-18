@@ -1,0 +1,129 @@
+basePath: /api/v1
+definitions:
+  entity.Response:
+    properties:
+      data: {}
+      message:
+        type: string
+      serverTime:
+        type: string
+      status:
+        type: string
+    type: object
+  transfer.InquiryRequest:
+    properties:
+      amount:
+        type: integer
+      destinationAccount:
+        type: string
+      sourceAccount:
+        type: string
+    required:
+    - amount
+    - destinationAccount
+    - sourceAccount
+    type: object
+  transfer.PaymentRequest:
+    properties:
+      amount:
+        type: integer
+      destinationAccount:
+        type: string
+      notes:
+        type: string
+      sequence:
+        type: string
+      sourceAccount:
+        type: string
+    required:
+    - amount
+    - destinationAccount
+    - sequence
+    - sourceAccount
+    type: object
+host: api.bankyaya.co.id
+info:
+  contact:
+    email: billyimmcul2010@gmail.com
+    name: BillyKore
+    url: https://www.swagger.io/support
+  description: Greet service API specification.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: https://swagger.io/terms/
+  title: API Specification
+  version: "1.0"
+paths:
+  /transfer/inquiry:
+    post:
+      consumes:
+      - application/json
+      description: Create new inquiry transfer
+      parameters:
+      - description: Inquiry request
+        in: body
+        name: InquiryRequest
+        required: true
+        schema:
+          $ref: '#/definitions/transfer.InquiryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entity.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.Response'
+      summary: Transfer inquiry
+      tags:
+      - transfer
+  /transfer/payment:
+    post:
+      consumes:
+      - application/json
+      description: Performs transfer payment
+      parameters:
+      - description: Payment request
+        in: body
+        name: PaymentRequest
+        required: true
+        schema:
+          $ref: '#/definitions/transfer.PaymentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/entity.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.Response'
+      summary: Transfer payment
+      tags:
+      - transfer
+schemes:
+- http
+- https
+swagger: "2.0"

@@ -1,0 +1,192 @@
+{
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "Greet service API specification.",
+        "title": "API Specification",
+        "termsOfService": "https://swagger.io/terms/",
+        "contact": {
+            "name": "BillyKore",
+            "url": "https://www.swagger.io/support",
+            "email": "billyimmcul2010@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "api.bankyaya.co.id",
+    "basePath": "/api/v1",
+    "paths": {
+        "/transfer/inquiry": {
+            "post": {
+                "description": "Create new inquiry transfer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transfer"
+                ],
+                "summary": "Transfer inquiry",
+                "parameters": [
+                    {
+                        "description": "Inquiry request",
+                        "name": "InquiryRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transfer.InquiryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/transfer/payment": {
+            "post": {
+                "description": "Performs transfer payment",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transfer"
+                ],
+                "summary": "Transfer payment",
+                "parameters": [
+                    {
+                        "description": "Payment request",
+                        "name": "PaymentRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transfer.PaymentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "entity.Response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "serverTime": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "transfer.InquiryRequest": {
+            "type": "object",
+            "required": [
+                "amount",
+                "destinationAccount",
+                "sourceAccount"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "destinationAccount": {
+                    "type": "string"
+                },
+                "sourceAccount": {
+                    "type": "string"
+                }
+            }
+        },
+        "transfer.PaymentRequest": {
+            "type": "object",
+            "required": [
+                "amount",
+                "destinationAccount",
+                "sequence",
+                "sourceAccount"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "destinationAccount": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "sequence": {
+                    "type": "string"
+                },
+                "sourceAccount": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
