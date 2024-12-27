@@ -3,6 +3,7 @@ package validation
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -36,11 +37,11 @@ func validationErr(err error) error {
 
 // joinValidationErrors converts a slice of FieldError into a concatenated error.
 func joinValidationErrors(validationErrors validator.ValidationErrors) error {
-	var errList []error
+	var errList []string
 	for _, fieldError := range validationErrors {
-		errList = append(errList, errors.New(errMessage(fieldError)))
+		errList = append(errList, errMessage(fieldError))
 	}
-	return errors.Join(errList...)
+	return fmt.Errorf(strings.Join(errList, "; "))
 }
 
 // tagMessages maps validation tags to corresponding error message templates.

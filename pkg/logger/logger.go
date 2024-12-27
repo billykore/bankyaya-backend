@@ -12,6 +12,7 @@ import (
 // Logger provides logging functions.
 type Logger struct {
 	zapLogger *zap.Logger
+	domain    string
 	usecase   string
 }
 
@@ -36,6 +37,12 @@ func newLogger() *zap.Logger {
 	return logger
 }
 
+func (l *Logger) DomainUsecase(domain, usecase string) *Logger {
+	l.domain = domain
+	l.usecase = usecase
+	return l
+}
+
 // Usecase set the usecase that throw the log.
 func (l *Logger) Usecase(usecase string) *Logger {
 	l.usecase = usecase
@@ -51,6 +58,7 @@ func (l *Logger) Error(err error) {
 func (l *Logger) Errorf(format string, a ...any) {
 	l.zapLogger.Error(
 		"error",
+		zap.String("domain", l.domain),
 		zap.String("usecase", l.usecase),
 		zap.Error(fmt.Errorf(format, a...)),
 	)
@@ -73,6 +81,7 @@ func (l *Logger) Fatalf(format string, a ...any) {
 func (l *Logger) Info(v any) {
 	l.zapLogger.Info(
 		"info",
+		zap.String("domain", l.domain),
 		zap.String("usecase", l.usecase),
 		zap.Any("info", v))
 }
@@ -81,6 +90,7 @@ func (l *Logger) Info(v any) {
 func (l *Logger) Infof(format string, a ...any) {
 	l.zapLogger.Info(
 		"info",
+		zap.String("domain", l.domain),
 		zap.String("usecase", l.usecase),
 		zap.Any("info", fmt.Sprintf(format, a...)),
 	)

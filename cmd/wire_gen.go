@@ -8,8 +8,10 @@ package main
 
 import (
 	"github.com/labstack/echo/v4"
+	qris3 "go.bankyaya.org/app/backend/domain/qris"
 	"go.bankyaya.org/app/backend/domain/transfer"
 	corebanking2 "go.bankyaya.org/app/backend/infra/api/corebanking"
+	qris2 "go.bankyaya.org/app/backend/infra/api/qris"
 	"go.bankyaya.org/app/backend/infra/email/mailer"
 	"go.bankyaya.org/app/backend/infra/http/handler"
 	"go.bankyaya.org/app/backend/infra/http/server"
@@ -20,6 +22,7 @@ import (
 	"go.bankyaya.org/app/backend/pkg/email/mailtrap"
 	"go.bankyaya.org/app/backend/pkg/httpclient"
 	"go.bankyaya.org/app/backend/pkg/logger"
+	"go.bankyaya.org/app/backend/pkg/qris"
 	"go.bankyaya.org/app/backend/pkg/validation"
 )
 
@@ -43,7 +46,12 @@ func initApp(cfg *config.Config) *app {
 	transferEmail := mailer.NewTransferEmail(loggerLogger, mailtrapClient)
 	service := transfer.NewService(loggerLogger, transferRepo, corebankingTransfer, transferEmail)
 	transferHandler := handler.NewTransferHandler(validator, service)
-	router := server.NewRouter(cfg, loggerLogger, echoEcho, transferHandler)
+	corebankingQRIS := corebanking2.NewQRIS(corebankingClient)
+	qrisClient := qris.NewClient(cfg, client)
+	qrisQRIS := qris2.NewQRIS(qrisClient)
+	qrisService := qris3.NewService(loggerLogger, corebankingQRIS, qrisQRIS)
+	qrisHandler := handler.NewQRISHandler(validator, qrisService)
+	router := server.NewRouter(cfg, loggerLogger, echoEcho, transferHandler, qrisHandler)
 	serverServer := server.New(router)
 	mainApp := newApp(serverServer)
 	return mainApp

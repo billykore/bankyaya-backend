@@ -8,6 +8,7 @@ import (
 
 var ProviderSet = wire.NewSet(
 	handler.NewTransferHandler,
+	handler.NewQRISHandler,
 	server.NewRouter,
 	server.New,
 )

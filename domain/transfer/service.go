@@ -40,8 +40,8 @@ type Repository interface {
 	GetUserById(ctx context.Context, id int) (*User, error)
 }
 
-// CoreBankingService defines methods for core banking operations.
-type CoreBankingService interface {
+// CoreBanking defines methods for core banking operations.
+type CoreBanking interface {
 	// CheckEOD verifies the current End-of-Day (EOD) process status in the core banking system.
 	CheckEOD(ctx context.Context) (*EODStatus, error)
 
@@ -59,14 +59,15 @@ type Email interface {
 	SendTransferReceipt(context.Context, *EmailData) error
 }
 
+// Service handles intra-bank transfer process.
 type Service struct {
 	log         *logger.Logger
 	repo        Repository
-	corebanking CoreBankingService
+	corebanking CoreBanking
 	email       Email
 }
 
-func NewService(log *logger.Logger, repo Repository, corebanking CoreBankingService, email Email) *Service {
+func NewService(log *logger.Logger, repo Repository, corebanking CoreBanking, email Email) *Service {
 	return &Service{
 		log:         log,
 		repo:        repo,

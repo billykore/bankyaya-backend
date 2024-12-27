@@ -17,6 +17,7 @@ type Config struct {
 	SQLite      internal.SQLite
 	CoreBanking internal.CoreBanking
 	Email       internal.Email
+	QRIS        internal.QRIS
 }
 
 var (

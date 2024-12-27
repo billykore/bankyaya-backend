@@ -101,7 +101,7 @@ func (c *Client) token(ctx context.Context) (string, error) {
 	}
 
 	resp := new(AuthResponse)
-	if err := json.NewDecoder(res.Body).Decode(resp); err != nil {
+	if err = json.NewDecoder(res.Body).Decode(resp); err != nil {
 		return "", err
 	}
 
