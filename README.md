@@ -9,6 +9,7 @@ designed with domain driven design principles and modern Go development practice
 ├── cmd/                # Entry points for the application (e.g., HTTP server, CLI, etc.).
 ├── domain/             # Core domain logic (Entities, Value Objects, Aggregates, Interfaces).
 │   ├── transfer/       # Intra-bank transfer domain.
+│   ├── qris/           # QRIS payment domain.
 │   └── ...             # Other domains.
 ├── infra/              # Frameworks, database, and external APIs.
 │   ├── api/            # External API handlers.

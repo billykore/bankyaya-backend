@@ -40,7 +40,7 @@ func initApp(cfg *config.Config) *app {
 	db := postgres.New(cfg)
 	transferRepo := repo.NewTransferRepo(db)
 	client := httpclient.New()
-	corebankingClient := corebanking.New(cfg, client)
+	corebankingClient := corebanking.NewClient(cfg, client)
 	corebankingTransfer := corebanking2.NewTransfer(corebankingClient)
 	mailtrapClient := mailtrap.NewClient(cfg)
 	transferEmail := mailer.NewTransferEmail(loggerLogger, mailtrapClient)

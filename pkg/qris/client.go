@@ -15,8 +15,10 @@ import (
 const (
 	tokenEndpoint   = "/oauth/accesstoken?grant_type=client_credentials"
 	inquiryEndpoint = "/v2/qris/inquiry-v2"
+	paymentEndpoint = "/v2/qris/payment-v2"
 )
 
+// Client represents a QRIS client for interacting with the API.
 type Client struct {
 	httpClient   *http.Client
 	url          string
@@ -24,6 +26,7 @@ type Client struct {
 	clientSecret string
 }
 
+// NewClient initializes and returns a new Client instance with the given configuration.
 func NewClient(cfg *config.Config, httpClient *http.Client) *Client {
 	return &Client{
 		httpClient:   httpClient,
@@ -33,6 +36,7 @@ func NewClient(cfg *config.Config, httpClient *http.Client) *Client {
 	}
 }
 
+// Inquiry retrieves QRIS details.
 func (c *Client) Inquiry(ctx context.Context, req InquiryRequest) (*InquiryResponse, error) {
 	resp := new(InquiryResponse)
 	err := c.executeRequest(ctx, http.MethodPost, inquiryEndpoint, req, resp)
@@ -42,6 +46,17 @@ func (c *Client) Inquiry(ctx context.Context, req InquiryRequest) (*InquiryRespo
 	return resp, err
 }
 
+// Payment initiates a payment transaction.
+func (c *Client) Payment(ctx context.Context, req PaymentRequest) (*PaymentResponse, error) {
+	resp := new(PaymentResponse)
+	err := c.executeRequest(ctx, http.MethodPost, paymentEndpoint, req, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, err
+}
+
+// token gets the authentication token required for API calls.
 func (c *Client) token(ctx context.Context) (string, error) {
 	fullUrl := c.url + tokenEndpoint
 	credential := fmt.Sprintf("%s:%s", c.clientId, c.clientSecret)

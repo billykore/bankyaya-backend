@@ -85,4 +85,5 @@ func (r *Router) setTransferRoutes() {
 
 func (r *Router) setQRISRoutes() {
 	r.router.POST("/qris/inquiry", r.qrisHandler.Inquiry)
+	r.router.POST("/qris/payment", r.qrisHandler.Payment)
 }

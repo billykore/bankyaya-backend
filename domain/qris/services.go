@@ -14,6 +14,9 @@ const qrisFee = 0
 // ErrEODInProgress indicates that the End of Day (EOD) process is currently in progress.
 var ErrEODInProgress = errors.New("EOD process is running")
 
+// ErrUnsuccessfulPayment is returned when a QRIS payment attempt fails.
+var ErrUnsuccessfulPayment = errors.New("QRIS payment is unsuccessful")
+
 type Repository interface {
 }
 
@@ -30,6 +33,9 @@ type CoreBanking interface {
 type QRIS interface {
 	// GetDetails retrieves QRIS data based on account number and QR code parameters.
 	GetDetails(ctx context.Context, accountNumber, qrCode string) (*QRISData, error)
+
+	// Pay processes a payment using the QRIS (Quick Response Code Indonesian Standard) system.
+	Pay(ctx context.Context, data *PaymentData) (*PaymentResult, error)
 }
 
 // Service handles QRIS payment process.
@@ -68,7 +74,7 @@ func (s *Service) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRes
 		return nil, status.Errorf(codes.Internal, "%s: %v", messageInquiryFailed, messageAccountIsNotActive)
 	}
 
-	details, err := s.qris.GetDetails(ctx, srcAccount.AccountNumber, req.QrCode)
+	details, err := s.qris.GetDetails(ctx, srcAccount.AccountNumber, req.QRCode)
 	if err != nil {
 		s.log.DomainUsecase("qris", "Inquiry").Errorf("Inquiry: %v", err)
 		return nil, status.Errorf(codes.Internal, "%s: %v", messageInquiryFailed, err)
@@ -89,5 +95,34 @@ func (s *Service) Inquiry(ctx context.Context, req *InquiryRequest) (*InquiryRes
 		TipValueOfFixed:              details.TipValueOfFixed,
 		TipValueOfPercentage:         details.TipValueOfPercentage,
 		Fee:                          qrisFee,
+	}, nil
+}
+
+func (s *Service) Payment(ctx context.Context, req *PaymentRequest) (*PaymentResponse, error) {
+	payRes, err := s.qris.Pay(ctx, &PaymentData{
+		AccountNumber:         req.SourceAccount,
+		QRCode:                req.QRCode,
+		RRN:                   req.RRN,
+		Amount:                req.Amount,
+		Tip:                   req.Tip,
+		FinancialOrganisation: req.FinancialOrganisation,
+		CustomerName:          req.CustomerName,
+		MerchantId:            req.MerchantId,
+		MerchantCriteria:      req.MerchantCriteria,
+		NMId:                  req.NMId,
+		AccountName:           req.CustomerName,
+	})
+	if err != nil {
+		s.log.DomainUsecase("qris", "Payment").Errorf("Payment: %v", err)
+		return nil, status.Error(codes.Internal, messagePaymentFailed)
+	}
+	return &PaymentResponse{
+		Amount:           payRes.Amount,
+		Tip:              payRes.Tip,
+		Total:            payRes.TotalAmount(),
+		Message:          payRes.Message,
+		RRN:              payRes.RRN,
+		InvoiceNumber:    payRes.InvoiceNumber,
+		TransactionLogId: payRes.TransactionReference,
 	}, nil
 }
