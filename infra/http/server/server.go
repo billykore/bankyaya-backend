@@ -63,9 +63,9 @@ func (r *Router) swagger() {
 
 func (r *Router) run() {
 	port := r.cfg.HTTP.Port
-	r.log.Infof("running on port ::[:%v]", port)
+	r.log.Usecase("run").Infof("running on port ::[:%v]", port)
 	if err := r.router.Start(":" + port); err != nil {
-		r.log.Fatalf("failed to run on port [::%v]", port)
+		r.log.Usecase("run").Fatalf("failed to run on port [::%v]", port)
 	}
 }
 
@@ -85,4 +85,5 @@ func (r *Router) setTransferRoutes() {
 
 func (r *Router) setQRISRoutes() {
 	r.router.POST("/qris/inquiry", r.qrisHandler.Inquiry)
+	r.router.POST("/qris/payment", r.qrisHandler.Payment)
 }

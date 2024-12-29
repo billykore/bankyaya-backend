@@ -15,7 +15,7 @@ var ProviderSet = wire.NewSet(
 	logger.New,
 	validation.New,
 	postgres.New,
-	corebanking.New,
+	corebanking.NewClient,
 	httpclient.New,
 	mailtrap.NewClient,
 	qris.NewClient,

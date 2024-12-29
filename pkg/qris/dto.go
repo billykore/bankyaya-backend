@@ -44,3 +44,48 @@ type InquiryData struct {
 	TipValueOfFixed       string `json:"tip_value_of_fixed"`
 	TipValueOfPercentage  string `json:"tip_value_of_percentage"`
 }
+
+type PaymentRequest struct {
+	NoRekNasabah     string  `json:"norek_nasabah"`
+	QRCode           string  `json:"qrCode"`
+	RRN              string  `json:"rrn"`
+	AmountPay        float64 `json:"amount_pay"`
+	Tips             float64 `json:"tips"`
+	LembagaKeuangan  string  `json:"lembaga_keuangan"`
+	CustomerName     string  `json:"customer_name"`
+	MerchantId       string  `json:"merchant_id"`
+	MerchantCriteria string  `json:"merchant_criteria"`
+	NMId             string  `json:"nmid"`
+	AccountName      string  `json:"account_name"`
+}
+
+type PaymentResponse struct {
+	Code             string       `json:"responseCode"`
+	Description      string       `json:"responseDescription"`
+	ErrorDescription string       `json:"errorDescription"`
+	Data             *PaymentData `json:"data"`
+}
+
+type PaymentData struct {
+	Message        string         `json:"message"`
+	RRN            string         `json:"rrn"`
+	InvoiceNumber  string         `json:"invoiceNumber"`
+	Remark         string         `json:"remark"`
+	TransactionRef string         `json:"trfRef"`
+	Detail         *PaymentDetail `json:"detail"`
+}
+
+type PaymentDetail struct {
+	TransactionDate   string `json:"transactionDate"`
+	TransactionStatus string `json:"transactionStatus"`
+	AcquirerName      string `json:"acquirerName"`
+	MerchantName      string `json:"merchantName"`
+	MerchantLocation  string `json:"merchantLocation"`
+	MerchantPan       string `json:"merchantPan"`
+	TerminalId        string `json:"terminalId"`
+	CustomerPan       string `json:"customerPan"`
+	ReffId            string `json:"reffId"`
+	Amount            int    `json:"amount"`
+	TipsAmount        int    `json:"tipsAmount"`
+	SourceOfFund      string `json:"sourceOfFund"`
+}

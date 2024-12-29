@@ -23,7 +23,7 @@ func NewQRISHandler(va *validation.Validator, svc *qris.Service) *QRISHandler {
 //
 //	@Summary		QRIS inquiry
 //	@Description	Create new QRIS inquiry
-//	@Tags			transfer
+//	@Tags			payment
 //	@Accept			json
 //	@Produce		json
 //	@Param			InquiryRequest	body		qris.InquiryRequest	true	"QRIS inquiry request"
@@ -41,6 +41,34 @@ func (h *QRISHandler) Inquiry(ctx echo.Context) error {
 		return ctx.JSON(entity.ResponseBadRequest(err))
 	}
 	resp, err := h.svc.Inquiry(ctx.Request().Context(), req)
+	if err != nil {
+		return ctx.JSON(entity.ResponseError(err))
+	}
+	return ctx.JSON(entity.ResponseSuccess(resp))
+}
+
+// Payment swaggo annotation.
+//
+//	@Summary		QRIS payment
+//	@Description	Do QRIS payment
+//	@Tags			payment
+//	@Accept			json
+//	@Produce		json
+//	@Param			PaymentRequest	body		qris.PaymentRequest	true	"QRIS payment request"
+//	@Success		200				{object}	entity.Response
+//	@Failure		400				{object}	entity.Response
+//	@Failure		404				{object}	entity.Response
+//	@Failure		500				{object}	entity.Response
+//	@Router			/qris/pay [post]
+func (h *QRISHandler) Payment(ctx echo.Context) error {
+	req := new(qris.PaymentRequest)
+	if err := ctx.Bind(req); err != nil {
+		return ctx.JSON(entity.ResponseBadRequest(err))
+	}
+	if err := h.va.Validate(req); err != nil {
+		return ctx.JSON(entity.ResponseBadRequest(err))
+	}
+	resp, err := h.svc.Payment(ctx.Request().Context(), req)
 	if err != nil {
 		return ctx.JSON(entity.ResponseError(err))
 	}

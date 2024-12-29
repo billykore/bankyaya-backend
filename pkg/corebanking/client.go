@@ -29,8 +29,8 @@ type Client struct {
 	password   string
 }
 
-// New initializes and returns a new Client instance with the given configuration.
-func New(cfg *config.Config, httpClient *http.Client) *Client {
+// NewClient initializes and returns a new Client instance with the given configuration.
+func NewClient(cfg *config.Config, httpClient *http.Client) *Client {
 	return &Client{
 		httpClient: httpClient,
 		url:        cfg.CoreBanking.URL,

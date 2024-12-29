@@ -53,7 +53,7 @@ func (ir *AccountDetails) IsAccountActive() bool {
 
 type GetDetailRequest struct {
 	AccountNumber string `json:"accountNumber,omitempty"`
-	QrCode        string `json:"qrCode,omitempty"`
+	QRCode        string `json:"qrCode,omitempty"`
 }
 
 type QRISData struct {
@@ -74,7 +74,7 @@ type QRISData struct {
 
 type InquiryRequest struct {
 	SourceAccount string      `json:"sourceAccount,omitempty" validate:"required"`
-	QrCode        string      `json:"qrCode,omitempty" validate:"required"`
+	QRCode        string      `json:"qrCode,omitempty" validate:"required"`
 	Amount        types.Money `json:"amount,omitempty"`
 }
 
@@ -104,7 +104,7 @@ type PaymentRequest struct {
 	FinancialOrganisation string      `json:"financialOrganisation" validate:"required"`
 	MerchantId            string      `json:"merchantId" validate:"required"`
 	MerchantCriteria      string      `json:"merchantCriteria" validate:"required"`
-	QrCode                string      `json:"qrCode" validate:"required"`
+	QRCode                string      `json:"qrCode" validate:"required"`
 	RRN                   string      `json:"rrn" validate:"required"`
 	NMId                  string      `json:"nmid"`
 	Note                  string      `json:"note"`
@@ -117,8 +117,42 @@ type PaymentResponse struct {
 	Message          string      `json:"message"`
 	RRN              string      `json:"rrn"`
 	InvoiceNumber    string      `json:"invoiceNumber"`
-	CustomerName     string      `json:"customerName"`
-	CustomerCity     string      `json:"customerCity"`
-	Note             string      `json:"note"`
 	TransactionLogId string      `json:"transactionLogId"`
+}
+
+type PaymentData struct {
+	AccountNumber         string
+	QRCode                string
+	RRN                   string
+	Amount                types.Money
+	Tip                   types.Money
+	FinancialOrganisation string
+	CustomerName          string
+	MerchantId            string
+	MerchantCriteria      string
+	NMId                  string
+	AccountName           string
+}
+
+type PaymentResult struct {
+	Message              string      `json:"message"`
+	RRN                  string      `json:"rrn"`
+	InvoiceNumber        string      `json:"invoiceNumber"`
+	Remark               string      `json:"remark"`
+	TransactionReference string      `json:"transactionReference"`
+	TransactionDate      string      `json:"transactionDate"`
+	TransactionStatus    string      `json:"transactionStatus"`
+	AcquirerName         string      `json:"acquirerName"`
+	MerchantName         string      `json:"merchantName"`
+	MerchantLocation     string      `json:"merchantLocation"`
+	MerchantPan          string      `json:"merchantPan"`
+	TerminalId           string      `json:"terminalId"`
+	CustomerPan          string      `json:"customerPan"`
+	ReferenceId          string      `json:"referenceId"`
+	Amount               types.Money `json:"amount"`
+	Tip                  types.Money `json:"tip"`
+}
+
+func (res *PaymentResult) TotalAmount() types.Money {
+	return res.Amount + res.Tip
 }
