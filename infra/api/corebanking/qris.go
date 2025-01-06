@@ -37,6 +37,9 @@ func (q *QRIS) GetAccountDetails(ctx context.Context, accountNumber string) (*qr
 	if err != nil {
 		return nil, err
 	}
+	if inquiry.StatusCode != "00" {
+		return nil, fmt.Errorf("core banking: %v (%v)", inquiry.StatusDescription, inquiry.ErrorCode)
+	}
 	return &qris.AccountDetails{
 		StatusCode:           inquiry.StatusCode,
 		StatusDescription:    inquiry.StatusDescription,

@@ -37,6 +37,9 @@ func (tf *Transfer) GetAccountDetails(ctx context.Context, accountNumber string)
 	if err != nil {
 		return nil, err
 	}
+	if inquiry.StatusCode != "00" {
+		return nil, fmt.Errorf("core banking: %v (%v)", inquiry.StatusDescription, inquiry.ErrorCode)
+	}
 	return &transfer.AccountDetails{
 		StatusCode:           inquiry.StatusCode,
 		StatusDescription:    inquiry.StatusDescription,
