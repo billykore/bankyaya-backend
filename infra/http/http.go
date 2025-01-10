@@ -9,6 +9,7 @@ import (
 var ProviderSet = wire.NewSet(
 	handler.NewTransferHandler,
 	handler.NewQRISHandler,
+	handler.NewUserHandler,
 	server.NewRouter,
 	server.New,
 )

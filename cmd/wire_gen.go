@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 	qris3 "go.bankyaya.org/app/backend/domain/qris"
 	"go.bankyaya.org/app/backend/domain/transfer"
+	"go.bankyaya.org/app/backend/domain/user"
 	corebanking2 "go.bankyaya.org/app/backend/infra/api/corebanking"
 	qris2 "go.bankyaya.org/app/backend/infra/api/qris"
 	"go.bankyaya.org/app/backend/infra/email/mailer"
@@ -51,7 +52,10 @@ func initApp(cfg *config.Config) *app {
 	qrisQRIS := qris2.NewQRIS(qrisClient)
 	qrisService := qris3.NewService(loggerLogger, corebankingQRIS, qrisQRIS)
 	qrisHandler := handler.NewQRISHandler(validator, qrisService)
-	router := server.NewRouter(cfg, loggerLogger, echoEcho, transferHandler, qrisHandler)
+	userRepo := repo.NewUserRepo(db)
+	userService := user.NewService(loggerLogger, userRepo)
+	userHandler := handler.NewUserHandler(validator, userService)
+	router := server.NewRouter(cfg, loggerLogger, echoEcho, transferHandler, qrisHandler, userHandler)
 	serverServer := server.New(router)
 	mainApp := newApp(serverServer)
 	return mainApp

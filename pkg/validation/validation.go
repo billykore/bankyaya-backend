@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+	"go.bankyaya.org/app/backend/pkg/logger"
 )
 
 // Validator is a struct that provides validation functionality for request data.
@@ -15,9 +16,13 @@ type Validator struct {
 
 // New initializes and returns a new instance of Validator.
 func New() *Validator {
-	return &Validator{
+	vv := &Validator{
 		v: validator.New(),
 	}
+	if err := vv.registerCustomValidation(); err != nil {
+		logger.New().Fatal(err)
+	}
+	return vv
 }
 
 // Validate checks the validity of the input data based on struct tags and returns an error if any.
@@ -41,7 +46,7 @@ func joinValidationErrors(validationErrors validator.ValidationErrors) error {
 	for _, fieldError := range validationErrors {
 		errList = append(errList, errMessage(fieldError))
 	}
-	return fmt.Errorf(strings.Join(errList, "; "))
+	return fmt.Errorf(strings.Join(errList, ". "))
 }
 
 // tagMessages maps validation tags to corresponding error message templates.
@@ -67,4 +72,12 @@ func formatMessage(template, field string, param ...string) string {
 		return fmt.Sprintf(template, field, param[0])
 	}
 	return fmt.Sprintf(template, field)
+}
+
+func (v *Validator) registerCustomValidation() error {
+	err := v.v.RegisterValidation("phonenumber", ValidPhoneNumber)
+	if err != nil {
+		return err
+	}
+	return nil
 }

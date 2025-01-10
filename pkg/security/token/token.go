@@ -18,12 +18,12 @@ type Token struct {
 }
 
 // New return new generated token for the given username.
-func New(username string) (Token, error) {
+func New(subject string) (Token, error) {
 	cfg := config.Get()
-	return generateToken(cfg, username)
+	return generateToken(cfg, subject)
 }
 
-func generateToken(cfg *config.Config, username string) (Token, error) {
+func generateToken(cfg *config.Config, subject string) (Token, error) {
 	id, err := uuid.New()
 	if err != nil {
 		return Token{}, err
@@ -33,9 +33,9 @@ func generateToken(cfg *config.Config, username string) (Token, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"jti": id,
-		"sub": username,
+		"sub": subject,
 		"iss": "app-name",
-		"aud": username,
+		"aud": subject,
 		"exp": time.Now().Add(time.Hour).Unix(),
 		"iat": time.Now().Unix(),
 	})

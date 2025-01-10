@@ -33,6 +33,7 @@ type Router struct {
 	router          *echo.Echo
 	transferHandler *handler.TransferHandler
 	qrisHandler     *handler.QRISHandler
+	userHandler     *handler.UserHandler
 }
 
 // NewRouter returns new Router.
@@ -42,6 +43,7 @@ func NewRouter(
 	router *echo.Echo,
 	transferHandler *handler.TransferHandler,
 	qrisHandler *handler.QRISHandler,
+	userHandler *handler.UserHandler,
 ) *Router {
 	return &Router{
 		cfg:             cfg,
@@ -49,6 +51,7 @@ func NewRouter(
 		router:          router,
 		transferHandler: transferHandler,
 		qrisHandler:     qrisHandler,
+		userHandler:     userHandler,
 	}
 }
 
@@ -75,6 +78,7 @@ func (r *Router) Run() {
 	r.swagger()
 	r.setTransferRoutes()
 	r.setQRISRoutes()
+	r.setUserRoutes()
 	r.run()
 }
 
@@ -86,4 +90,8 @@ func (r *Router) setTransferRoutes() {
 func (r *Router) setQRISRoutes() {
 	r.router.POST("/qris/inquiry", r.qrisHandler.Inquiry)
 	r.router.POST("/qris/payment", r.qrisHandler.Payment)
+}
+
+func (r *Router) setUserRoutes() {
+	r.router.POST("/user/login", r.userHandler.Login)
 }
