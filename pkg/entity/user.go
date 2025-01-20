@@ -1,6 +1,7 @@
 package entity
 
 type User struct {
-	CIF string
-	Id  int
+	Id       int
+	CIF      string
+	FullName string
 }

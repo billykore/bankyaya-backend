@@ -83,13 +83,19 @@ func (r *Router) Run() {
 }
 
 func (r *Router) setTransferRoutes() {
-	r.router.POST("/transfer/inquiry", r.transferHandler.Inquiry)
-	r.router.POST("/transfer/payment", r.transferHandler.Payment)
+	tr := r.router.Group("/transfer")
+	tr.Use(authMiddleware())
+
+	tr.POST("/inquiry", r.transferHandler.Inquiry)
+	tr.POST("/payment", r.transferHandler.Payment)
 }
 
 func (r *Router) setQRISRoutes() {
-	r.router.POST("/qris/inquiry", r.qrisHandler.Inquiry)
-	r.router.POST("/qris/payment", r.qrisHandler.Payment)
+	qr := r.router.Group("/qris")
+	qr.Use(authMiddleware())
+
+	qr.POST("/inquiry", r.qrisHandler.Inquiry)
+	qr.POST("/payment", r.qrisHandler.Payment)
 }
 
 func (r *Router) setUserRoutes() {

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"go.bankyaya.org/app/backend/pkg/codes"
+	"go.bankyaya.org/app/backend/pkg/entity"
 	"go.bankyaya.org/app/backend/pkg/logger"
 	"go.bankyaya.org/app/backend/pkg/security/password"
 	"go.bankyaya.org/app/backend/pkg/security/token"
@@ -68,7 +69,11 @@ func (s *Service) Login(ctx context.Context, req LoginRequest) (*LoginResponse, 
 		return nil, status.Errorf(codes.Forbidden, "%v: %v", messageLoginFailed, messageInvalidDevice)
 	}
 
-	accessToken, err := token.New(req.Phone)
+	accessToken, err := token.New(entity.User{
+		Id:       user.ID,
+		CIF:      user.CIF,
+		FullName: user.FullName,
+	})
 	if err != nil {
 		s.log.DomainUsecase("user", "Login").Errorf("New token: %v", err)
 		return nil, status.Errorf(codes.Internal, messageLoginFailed)

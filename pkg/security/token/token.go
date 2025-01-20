@@ -18,12 +18,12 @@ type Token struct {
 }
 
 // New return new generated token for the given username.
-func New(subject string) (Token, error) {
+func New(user entity.User) (Token, error) {
 	cfg := config.Get()
-	return generateToken(cfg, subject)
+	return generateToken(cfg, user)
 }
 
-func generateToken(cfg *config.Config, subject string) (Token, error) {
+func generateToken(cfg *config.Config, user entity.User) (Token, error) {
 	id, err := uuid.New()
 	if err != nil {
 		return Token{}, err
@@ -32,12 +32,14 @@ func generateToken(cfg *config.Config, subject string) (Token, error) {
 	exp := now.Add(tokenExpiredTime)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"jti": id,
-		"sub": subject,
-		"iss": "app-name",
-		"aud": subject,
-		"exp": time.Now().Add(time.Hour).Unix(),
-		"iat": time.Now().Unix(),
+		"jti":    id,
+		"sub":    user.FullName,
+		"iss":    "api.bankyaya.co.id",
+		"aud":    "https://bankyaya.co.id",
+		"exp":    time.Now().Add(time.Hour).Unix(),
+		"iat":    time.Now().Unix(),
+		"cif":    user.CIF,
+		"userId": user.Id,
 	})
 	token.Header["kid"] = cfg.Token.HeaderKid
 
@@ -55,7 +57,21 @@ func generateToken(cfg *config.Config, subject string) (Token, error) {
 // UserFromToken returns user information from JWT token.
 func UserFromToken(token *jwt.Token) entity.User {
 	claims := token.Claims.(jwt.MapClaims)
+	cif, ok := claims["cif"].(string)
+	if !ok {
+		return entity.User{}
+	}
+	userId, ok := claims["userId"].(int)
+	if !ok {
+		return entity.User{}
+	}
+	fullName, ok := claims["sub"].(string)
+	if !ok {
+		return entity.User{}
+	}
 	return entity.User{
-		Id: claims["userId"].(int),
+		CIF:      cif,
+		Id:       userId,
+		FullName: fullName,
 	}
 }
