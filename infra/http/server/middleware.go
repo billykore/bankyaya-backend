@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"go.bankyaya.org/app/backend/pkg/config"
 	"go.bankyaya.org/app/backend/pkg/ctxt"
-	"go.bankyaya.org/app/backend/pkg/entity"
+	"go.bankyaya.org/app/backend/pkg/response"
 	"go.bankyaya.org/app/backend/pkg/security/token"
 )
 
@@ -36,5 +36,5 @@ func successHandler(ctx echo.Context) {
 
 // errorHandler returns unauthorized response if there is authentication error.
 func errorHandler(ctx echo.Context, err error) error {
-	return ctx.JSON(entity.ResponseUnauthorized(err))
+	return ctx.JSON(response.Unauthorized(err))
 }

@@ -1,4 +1,4 @@
-package entity
+package response
 
 import (
 	"errors"
@@ -16,8 +16,8 @@ type Response struct {
 	ServerTime string `json:"serverTime,omitempty"`
 }
 
-// ResponseSuccess returns status code 200 and success response with data.
-func ResponseSuccess(data any) (int, *Response) {
+// Success returns status code 200 and success response with data.
+func Success(data any) (int, *Response) {
 	return http.StatusOK, &Response{
 		Status:     "OK",
 		Data:       data,
@@ -25,16 +25,16 @@ func ResponseSuccess(data any) (int, *Response) {
 	}
 }
 
-// ResponseSuccessNilData returns status code 200 and success response without data.
-func ResponseSuccessNilData() (int, *Response) {
+// SuccessWithNoData returns status code 200 and success response without data.
+func SuccessWithNoData() (int, *Response) {
 	return http.StatusOK, &Response{
 		Status:     "OK",
 		ServerTime: currentServerTime(),
 	}
 }
 
-// ResponseError returns error status code and error.
-func ResponseError(err error) (int, *Response) {
+// Error returns error status code and error.
+func Error(err error) (int, *Response) {
 	var s *status.Status
 	if errors.As(err, &s) {
 		return responseCode[s.Code], &Response{
@@ -43,11 +43,11 @@ func ResponseError(err error) (int, *Response) {
 			ServerTime: currentServerTime(),
 		}
 	}
-	return ResponseInternalServerError(err)
+	return InternalServerError(err)
 }
 
-// ResponseBadRequest returns status code 400 and error response.
-func ResponseBadRequest(err error) (int, *Response) {
+// BadRequest returns status code 400 and error response.
+func BadRequest(err error) (int, *Response) {
 	return http.StatusBadRequest, &Response{
 		Status:     "BAD_REQUEST",
 		Message:    err.Error(),
@@ -55,8 +55,8 @@ func ResponseBadRequest(err error) (int, *Response) {
 	}
 }
 
-// ResponseUnauthorized returns status code 401 and error response.
-func ResponseUnauthorized(err error) (int, *Response) {
+// Unauthorized returns status code 401 and error response.
+func Unauthorized(err error) (int, *Response) {
 	return http.StatusUnauthorized, &Response{
 		Status:     "UNAUTHORIZED",
 		Message:    err.Error(),
@@ -64,8 +64,8 @@ func ResponseUnauthorized(err error) (int, *Response) {
 	}
 }
 
-// ResponseInternalServerError returns status code 500 and error response.
-func ResponseInternalServerError(err error) (int, *Response) {
+// InternalServerError returns status code 500 and error response.
+func InternalServerError(err error) (int, *Response) {
 	return http.StatusInternalServerError, &Response{
 		Status:     "INTERNAL_SERVER_ERROR",
 		Message:    err.Error(),

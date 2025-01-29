@@ -1,4 +1,4 @@
-package entity
+package data
 
 type User struct {
 	Id       int

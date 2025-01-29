@@ -5,7 +5,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"go.bankyaya.org/app/backend/pkg/config"
-	"go.bankyaya.org/app/backend/pkg/entity"
+	"go.bankyaya.org/app/backend/pkg/data"
 	"go.bankyaya.org/app/backend/pkg/uuid"
 )
 
@@ -18,12 +18,12 @@ type Token struct {
 }
 
 // New return new generated token for the given username.
-func New(user entity.User) (Token, error) {
+func New(user data.User) (Token, error) {
 	cfg := config.Get()
 	return generateToken(cfg, user)
 }
 
-func generateToken(cfg *config.Config, user entity.User) (Token, error) {
+func generateToken(cfg *config.Config, user data.User) (Token, error) {
 	id, err := uuid.New()
 	if err != nil {
 		return Token{}, err
@@ -55,21 +55,21 @@ func generateToken(cfg *config.Config, user entity.User) (Token, error) {
 }
 
 // UserFromToken returns user information from JWT token.
-func UserFromToken(token *jwt.Token) entity.User {
+func UserFromToken(token *jwt.Token) data.User {
 	claims := token.Claims.(jwt.MapClaims)
 	cif, ok := claims["cif"].(string)
 	if !ok {
-		return entity.User{}
+		return data.User{}
 	}
 	userId, ok := claims["userId"].(int)
 	if !ok {
-		return entity.User{}
+		return data.User{}
 	}
 	fullName, ok := claims["sub"].(string)
 	if !ok {
-		return entity.User{}
+		return data.User{}
 	}
-	return entity.User{
+	return data.User{
 		CIF:      cif,
 		Id:       userId,
 		FullName: fullName,
