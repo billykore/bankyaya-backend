@@ -1,37 +1,46 @@
 package transfer
 
 import (
-	"time"
+	"context"
+	"errors"
 )
 
-type Sequence struct {
-	ID              int       `gorm:"column:ID;primaryKey"`
-	SeqNo           string    `gorm:"column:SEQ_NO"`
-	Amount          string    `gorm:"column:AMOUNT"`
-	AccNoSrc        string    `gorm:"column:ACC_NO_SRC"`
-	AccNoDest       string    `gorm:"column:ACC_NO_DEST"`
-	AccNameSrc      string    `gorm:"column:ACC_NAME_SRC"`
-	AccNameDest     string    `gorm:"column:ACC_NAME_DEST"`
-	TransactionType string    `gorm:"column:TRANSACTION_TYPE"`
-	CifDest         string    `gorm:"column:CIF_DEST"`
-	CreateDate      time.Time `gorm:"column:CREATE_DATE"`
+// ErrEODInProgress indicates that the End of Day (EOD) process is currently in progress.
+var ErrEODInProgress = errors.New("EOD process is running")
+
+// Repository defines methods for managing transfer sequence persistence.
+type Repository interface {
+	// InsertSequence inserts a transfer sequence into the persistence repository.
+	// Requires a context and a Sequence object to execute.
+	// Returns an error if the operation fails.
+	InsertSequence(ctx context.Context, seq *Sequence) error
+
+	// GetSequence retrieves a transfer sequence based on the sequence number.
+	// Requires a context and the sequence number as inputs.
+	// Returns a Sequence object and an error if retrieval fails.
+	GetSequence(ctx context.Context, sequenceNumber string) (*Sequence, error)
+
+	// GetUserById retrieves a user by their unique ID.
+	// Requires a context and an integer ID as input parameters.
+	// Returns a User object and an error if retrieval fails.
+	GetUserById(ctx context.Context, id int) (*User, error)
 }
 
-func (*Sequence) TableName() string {
-	return "_sequence_trf"
+// CoreBanking defines methods for core banking operations.
+type CoreBanking interface {
+	// CheckEOD verifies the current End-of-Day (EOD) process status in the core banking system.
+	CheckEOD(ctx context.Context) (*EODData, error)
+
+	// GetAccountDetails retrieves account information for the given account number.
+	GetAccountDetails(ctx context.Context, accountNumber string) (*AccountDetails, error)
+
+	// PerformOverbooking executes a transfer between two accounts with the specified amount and remark.
+	// It returns an OverbookingResponse and an error if the operation fails.
+	PerformOverbooking(ctx context.Context, req OverbookingRequest) (*OverbookingResponse, error)
 }
 
-type User struct {
-	ID            int       `pg:"ID"`
-	CIF           string    `pg:"CIF"`
-	AccountNumber string    `pg:"ACCNO"`
-	FullName      string    `pg:"FULL_NAME"`
-	Email         string    `pg:"EMAIL"`
-	PhoneNumber   string    `pg:"PHONE_NUMBER"`
-	IdentityNo    string    `pg:"KTP_NUMBER"`
-	CreateDate    time.Time `pg:"CREATE_DATE"`
-}
-
-func (*User) TableName() string {
-	return "_users"
+// Email is an interface for sending transfer receipt emails.
+type Email interface {
+	// SendTransferReceipt sends a transfer receipt email using provided context and email data.
+	SendTransferReceipt(context.Context, *EmailData) error
 }

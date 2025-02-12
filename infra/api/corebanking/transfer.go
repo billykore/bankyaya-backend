@@ -18,14 +18,15 @@ func NewTransfer(corebanking *corebanking.Client) *Transfer {
 	return &Transfer{client: corebanking}
 }
 
-func (tf *Transfer) CheckEOD(ctx context.Context) (*transfer.EODStatus, error) {
+func (tf *Transfer) CheckEOD(ctx context.Context) (*transfer.EODData, error) {
 	eod, err := tf.client.EOD(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to check EOD: %w", err)
 	}
-	return &transfer.EODStatus{
-		Code:          eod.Code,
-		Description:   eod.Description,
+	if eod.Code != "00" {
+		return nil, fmt.Errorf("core banking: %v (%v)", eod.Description, eod.Code)
+	}
+	return &transfer.EODData{
 		SystemDate:    eod.Data.SystemDate,
 		Status:        eod.Data.EodStatus,
 		StandInStatus: eod.Data.StandInStatus,
@@ -41,9 +42,6 @@ func (tf *Transfer) GetAccountDetails(ctx context.Context, accountNumber string)
 		return nil, fmt.Errorf("core banking: %v (%v)", inquiry.StatusDescription, inquiry.ErrorCode)
 	}
 	return &transfer.AccountDetails{
-		StatusCode:           inquiry.StatusCode,
-		StatusDescription:    inquiry.StatusDescription,
-		ErrorCode:            inquiry.ErrorCode,
 		JournalSequence:      inquiry.JournalSequence,
 		TransactionReference: inquiry.TransactionReference,
 		AccountNumber:        inquiry.AccountData.AccountNumber,
@@ -72,9 +70,10 @@ func (tf *Transfer) PerformOverbooking(ctx context.Context, req transfer.Overboo
 	if err != nil {
 		return nil, err
 	}
+	if ovb.Code != "00" {
+		return nil, fmt.Errorf("core banking overbook failed: %v (%v)", ovb.Description, ovb.Code)
+	}
 	return &transfer.OverbookingResponse{
-		Code:                 ovb.Code,
-		Description:          ovb.Description,
 		JournalSequence:      ovb.JournalSequence,
 		TransactionReference: ovb.TransactionReference,
 		ABMsg:                ovb.ABMsg,

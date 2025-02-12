@@ -59,7 +59,7 @@ func NewTransferEmail(log *logger.Logger, client *mailtrap.Client) *TransferEmai
 	}
 }
 
-func (e *TransferEmail) SendTransferReceipt(ctx context.Context, data *transfer.EmailData) error {
+func (te *TransferEmail) SendTransferReceipt(_ context.Context, data *transfer.EmailData) error {
 	body, err := parseTransferTemplate(map[string]any{
 		"CompanyName":        constant.CompanyName,
 		"SourceName":         data.SourceName,
@@ -73,16 +73,16 @@ func (e *TransferEmail) SendTransferReceipt(ctx context.Context, data *transfer.
 		"Note":               data.Note,
 	})
 	if err != nil {
-		e.log.Usecase("SendTransferReceipt").Error(err)
+		te.log.Usecase("SendTransferReceipt").Error(err)
 		return err
 	}
-	err = e.client.Send(mailtrap.Data{
+	err = te.client.Send(mailtrap.Data{
 		Recipient: data.Recipient,
 		Subject:   data.Subject,
 		Body:      body,
 	})
 	if err != nil {
-		e.log.Usecase("SendTransferReceipt").Error(err)
+		te.log.Usecase("SendTransferReceipt").Error(err)
 		return err
 	}
 	return nil

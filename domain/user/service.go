@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"errors"
 	"strings"
 
 	"go.bankyaya.org/app/backend/pkg/codes"
@@ -13,20 +12,13 @@ import (
 	"go.bankyaya.org/app/backend/pkg/status"
 )
 
-var ErrInvalidDevice = errors.New("invalid device")
-
-// Repository defines methods for managing user persistence.
-type Repository interface {
-	// GetUserByPhoneNumber retrieves a user from the database by their phone number.
-	// Requires a context and a string phone number as input parameters.
-	// Returns a User object and an error if retrieval fails.
-	GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (*User, error)
-
-	// GetDeviceById retrieves a device from the database by its unique ID.
-	// Requires a context and a strings device ID as input parameters.
-	// Returns a Device object and an error if retrieval fails.
-	GetDeviceById(ctx context.Context, deviceId string) (*Device, error)
-}
+const (
+	messageLoginFailed         = "Login failed"
+	messageDeviceIsBlacklisted = "Device is blacklisted"
+	messageUserNotFound        = "User not found"
+	messageInvalidPassword     = "Invalid password"
+	messageInvalidDevice       = "Invalid device"
+)
 
 // Service handles user related process.
 type Service struct {

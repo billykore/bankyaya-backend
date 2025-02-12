@@ -18,14 +18,15 @@ func NewQRIS(client *corebanking.Client) *QRIS {
 	}
 }
 
-func (q *QRIS) CheckEOD(ctx context.Context) (*qris.EODStatus, error) {
+func (q *QRIS) CheckEOD(ctx context.Context) (*qris.EODData, error) {
 	eod, err := q.client.EOD(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to check EOD: %w", err)
 	}
-	return &qris.EODStatus{
-		Code:          eod.Code,
-		Description:   eod.Description,
+	if eod.Code != "00" {
+		return nil, fmt.Errorf("EOD: %v (%v)", eod.Description, eod.Code)
+	}
+	return &qris.EODData{
 		SystemDate:    eod.Data.SystemDate,
 		Status:        eod.Data.EodStatus,
 		StandInStatus: eod.Data.StandInStatus,
