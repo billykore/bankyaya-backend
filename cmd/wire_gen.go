@@ -9,6 +9,7 @@ package main
 import (
 	"github.com/labstack/echo/v4"
 	qris3 "go.bankyaya.org/app/backend/domain/qris"
+	"go.bankyaya.org/app/backend/domain/scheduler"
 	"go.bankyaya.org/app/backend/domain/transfer"
 	"go.bankyaya.org/app/backend/domain/user"
 	corebanking2 "go.bankyaya.org/app/backend/infra/api/corebanking"
@@ -55,7 +56,10 @@ func initApp(cfg *config.Config) *app {
 	userRepo := repo.NewUserRepo(db)
 	userService := user.NewService(loggerLogger, userRepo)
 	userHandler := handler.NewUserHandler(validator, userService)
-	router := server.NewRouter(cfg, loggerLogger, echoEcho, transferHandler, qrisHandler, userHandler)
+	schedulerRepo := repo.NewSchedulerRepo(db)
+	schedulerService := scheduler.NewService(loggerLogger, schedulerRepo)
+	schedulerHandler := handler.NewSchedulerHandler(validator, schedulerService)
+	router := server.NewRouter(cfg, loggerLogger, echoEcho, transferHandler, qrisHandler, userHandler, schedulerHandler)
 	serverServer := server.New(router)
 	mainApp := newApp(serverServer)
 	return mainApp

@@ -10,6 +10,7 @@ var ProviderSet = wire.NewSet(
 	handler.NewTransferHandler,
 	handler.NewQRISHandler,
 	handler.NewUserHandler,
+	handler.NewSchedulerHandler,
 	server.NewRouter,
 	server.New,
 )

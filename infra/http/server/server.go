@@ -28,12 +28,13 @@ func (s *Server) Serve() {
 
 // Router get all request to handlers and returns the response produce by handlers.
 type Router struct {
-	cfg             *config.Config
-	log             *logger.Logger
-	router          *echo.Echo
-	transferHandler *handler.TransferHandler
-	qrisHandler     *handler.QRISHandler
-	userHandler     *handler.UserHandler
+	cfg              *config.Config
+	log              *logger.Logger
+	router           *echo.Echo
+	transferHandler  *handler.TransferHandler
+	qrisHandler      *handler.QRISHandler
+	userHandler      *handler.UserHandler
+	schedulerHandler *handler.SchedulerHandler
 }
 
 // NewRouter returns new Router.
@@ -44,14 +45,16 @@ func NewRouter(
 	transferHandler *handler.TransferHandler,
 	qrisHandler *handler.QRISHandler,
 	userHandler *handler.UserHandler,
+	schedulerHandler *handler.SchedulerHandler,
 ) *Router {
 	return &Router{
-		cfg:             cfg,
-		log:             log,
-		router:          router,
-		transferHandler: transferHandler,
-		qrisHandler:     qrisHandler,
-		userHandler:     userHandler,
+		cfg:              cfg,
+		log:              log,
+		router:           router,
+		transferHandler:  transferHandler,
+		qrisHandler:      qrisHandler,
+		userHandler:      userHandler,
+		schedulerHandler: schedulerHandler,
 	}
 }
 
@@ -79,6 +82,7 @@ func (r *Router) Run() {
 	r.setTransferRoutes()
 	r.setQRISRoutes()
 	r.setUserRoutes()
+	r.setSchedulerRoutes()
 	r.run()
 }
 
@@ -100,4 +104,11 @@ func (r *Router) setQRISRoutes() {
 
 func (r *Router) setUserRoutes() {
 	r.router.POST("/user/login", r.userHandler.Login)
+}
+
+func (r *Router) setSchedulerRoutes() {
+	sr := r.router.Group("/scheduler")
+	sr.Use(authMiddleware())
+
+	sr.POST("", r.schedulerHandler.CreateSchedule)
 }
