@@ -5,12 +5,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.bankyaya.org/app/backend/pkg/entity"
+	"go.bankyaya.org/app/backend/pkg/data"
 )
 
 func TestContextWithUserAndUserFromContext(t *testing.T) {
 	ctx := context.Background()
-	uctx := ContextWithUser(ctx, entity.User{
+	uctx := ContextWithUser(ctx, data.User{
 		CIF: "123456789",
 		Id:  5,
 	})

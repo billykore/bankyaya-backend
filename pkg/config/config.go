@@ -18,6 +18,7 @@ type Config struct {
 	CoreBanking internal.CoreBanking
 	Email       internal.Email
 	QRIS        internal.QRIS
+	Rabbit      internal.Rabbit
 }
 
 var (

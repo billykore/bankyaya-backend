@@ -7,6 +7,7 @@ import (
 	"go.bankyaya.org/app/backend/pkg/email/mailtrap"
 	"go.bankyaya.org/app/backend/pkg/httpclient"
 	"go.bankyaya.org/app/backend/pkg/logger"
+	"go.bankyaya.org/app/backend/pkg/messaging/rabbitmq"
 	"go.bankyaya.org/app/backend/pkg/qris"
 	"go.bankyaya.org/app/backend/pkg/validation"
 )
@@ -19,4 +20,5 @@ var ProviderSet = wire.NewSet(
 	httpclient.New,
 	mailtrap.NewClient,
 	qris.NewClient,
+	rabbitmq.NewConnection,
 )

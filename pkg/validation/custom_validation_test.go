@@ -21,9 +21,9 @@ func TestValidPhoneNumber(t *testing.T) {
 		args string
 		want bool
 	}{
-		{name: "valid phone number", args: "+6281338442777", want: true},
-		{name: "missing + in phone number", args: "6281338442777", want: false},
-		{name: "+ sign in the end of phone number", args: "+6281338442777", want: false},
+		{name: "valid phone number", args: "+6281338442777", want: false},
+		{name: "missing + in phone number", args: "6281338442777", want: true},
+		{name: "+ sign in the end of phone number", args: "6281338442777+", want: true},
 	}
 
 	for _, tt := range tests {

@@ -9,8 +9,6 @@ import (
 	"go.bankyaya.org/app/backend/pkg/uuid"
 )
 
-const tokenExpiredTime = 15 * time.Minute
-
 // Token contains access token and expired time of the token
 type Token struct {
 	AccessToken string `json:"accessToken"`
@@ -18,18 +16,18 @@ type Token struct {
 }
 
 // New return new generated token for the given username.
-func New(user data.User) (Token, error) {
+func New(user data.User, duration time.Duration) (Token, error) {
 	cfg := config.Get()
-	return generateToken(cfg, user)
+	return generateToken(cfg, user, duration)
 }
 
-func generateToken(cfg *config.Config, user data.User) (Token, error) {
+func generateToken(cfg *config.Config, user data.User, duration time.Duration) (Token, error) {
 	id, err := uuid.New()
 	if err != nil {
 		return Token{}, err
 	}
 	now := time.Now()
-	exp := now.Add(tokenExpiredTime)
+	exp := now.Add(duration)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"jti":    id,
@@ -40,6 +38,7 @@ func generateToken(cfg *config.Config, user data.User) (Token, error) {
 		"iat":    time.Now().Unix(),
 		"cif":    user.CIF,
 		"userId": user.Id,
+		"email":  user.Email,
 	})
 	token.Header["kid"] = cfg.Token.HeaderKid
 
@@ -69,9 +68,14 @@ func UserFromToken(token *jwt.Token) data.User {
 	if !ok {
 		return data.User{}
 	}
+	email, ok := claims["email"].(string)
+	if !ok {
+		return data.User{}
+	}
 	return data.User{
 		CIF:      cif,
 		Id:       userId,
 		FullName: fullName,
+		Email:    email,
 	}
 }

@@ -22,7 +22,7 @@ func New(cfg *config.Config) *gorm.DB {
 		dsn := cfg.Postgres.DSN
 		db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 		if err != nil {
-			log.Usecase("New").Fatalf("failed to connect database: %v", err)
+			log.Fatalf("failed to connect database: %v", err)
 			return
 		}
 		dbCh <- db
@@ -31,7 +31,7 @@ func New(cfg *config.Config) *gorm.DB {
 
 	select {
 	case <-ctx.Done():
-		log.Usecase("New").Fatalf("failed to connect database: %v", ctx.Err())
+		log.Fatalf("failed to connect database: %v", ctx.Err())
 		return nil
 	case db := <-dbCh:
 		return db

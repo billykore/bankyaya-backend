@@ -1,27 +1,42 @@
 # Simple Backend Banking System
 
 The repository provides a **Simple Backend Banking System**
-designed with domain driven design principles and modern Go development practices.
+designed with hexagonal architecture principles and modern Go development practices.
+
+# Hexagonal Architecture
+
+https://netflixtechblog.com/ready-for-changes-with-hexagonal-architecture-b315ec967749
 
 # Project Structure
 
 ```text
 ├── cmd/                # Entry points for the application (e.g., HTTP server, CLI, etc.).
-├── domain/             # Core domain logic (Entities, Value Objects, Aggregates, Interfaces).
-│   ├── transfer/       # Intra-bank transfer domain.
-│   ├── qris/           # QRIS payment domain.
-│   └── ...             # Other domains.
-├── infra/              # Frameworks, database, and external APIs.
-│   ├── api/            # External API handlers.
-│   ├── email/          # Email service handlers.
-│   ├── http/           # HTTP server (Handlers, Routers).
-│   ├── storage/        # Database implementation (Postgres, Redis, etc.).
-│   └── ...             # Other infrastructures.
+├── internal/           # Application core logic.
+│   ├── adapter/        # Frameworks, database, and external APIs implementations.
+│   │   ├── api/        # External API handlers.
+│   │   ├── email/      # Email service handlers.
+│   │   ├── http/       # HTTP server (Handlers, Routers).
+│   │   ├── messaging/  # Message broker  implementation (RabbitMQ, Kafka, etc.).
+│   │   ├── storage/    # Database implementation (Postgres, Redis, etc.).
+│   │   └── ...         # Other adapters.
+│   ├── application/    # Frameworks, database, and external APIs implementations.
+│   │   ├── qris/       # QRIS payment domain.
+│   │   ├── scheduler/  # Transaction scheduler domain.
+│   │   ├── transfer/   # Intra-bank transfer domain.
+│   │   ├── user/       # User domain.
+│   │   └── ...         # Other domains.
+│   └── core/           # Core domain logic (Entities, Value Objects, Aggregates, Interfaces).
+│       ├── qris/       # QRIS payment domain.
+│       ├── scheduler/  # Transaction scheduler domain.
+│       ├── transfer/   # Intra-bank transfer domain.
+│       ├── user/       # User domain.
+│       └── ...         # Other domains.
 ├── pkg/                # Shared libraries or utilities.
 ├── script/             # Utility scripts.
 ├── .gitignore          # .gitignore file.
 ├── Dockerfile          # Application Dockerfile.
 ├── go.mod              # Go module definition.
+├── go.sum              # Go module sum definition.
 ├── Makefile            # Makefile.
 └── README.md           # Project documentation.
 ```

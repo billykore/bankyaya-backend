@@ -1,6 +1,6 @@
 basePath: /api/v1
 definitions:
-  entity.Response:
+  response.Response:
     properties:
       data: {}
       message:
@@ -9,6 +9,47 @@ definitions:
         type: string
       status:
         type: string
+    type: object
+  scheduler.CreateScheduleRequest:
+    properties:
+      accountType:
+        type: string
+      amount:
+        type: integer
+      bankCode:
+        type: string
+      biFastCode:
+        type: string
+      date:
+        type: integer
+      day:
+        type: string
+      destination:
+        type: string
+      destinationName:
+        type: string
+      frequency:
+        type: string
+      note:
+        type: string
+      purposeType:
+        type: string
+      sakuId:
+        type: integer
+      startDate:
+        type: string
+      transactionMethod:
+        type: string
+    required:
+    - accountType
+    - amount
+    - bankCode
+    - destination
+    - destinationName
+    - frequency
+    - sakuId
+    - startDate
+    - transactionMethod
     type: object
   transfer.InquiryRequest:
     properties:
@@ -55,6 +96,105 @@ info:
   title: API Specification
   version: "1.0"
 paths:
+  /scheduler:
+    post:
+      consumes:
+      - application/json
+      description: Create a new transaction schedule
+      parameters:
+      - description: Create a new schedule request
+        in: body
+        name: CreateScheduleRequest
+        required: true
+        schema:
+          $ref: '#/definitions/scheduler.CreateScheduleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create a new schedule
+      tags:
+      - transaction
+  /scheduler/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a transaction schedule by the given ID
+      parameters:
+      - description: Schedule ID
+        in: path
+        name: DeleteScheduleRequest
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete a schedule by ID
+      tags:
+      - transaction
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a transaction schedule by the given ID
+      parameters:
+      - description: Schedule ID
+        in: path
+        name: GetScheduleRequest
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get a schedule by ID
+      tags:
+      - transaction
   /transfer/inquiry:
     post:
       consumes:
@@ -73,19 +213,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entity.Response'
+            $ref: '#/definitions/response.Response'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/entity.Response'
+            $ref: '#/definitions/response.Response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/entity.Response'
+            $ref: '#/definitions/response.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/entity.Response'
+            $ref: '#/definitions/response.Response'
       summary: Transfer inquiry
       tags:
       - transfer
@@ -107,22 +247,56 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entity.Response'
+            $ref: '#/definitions/response.Response'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/entity.Response'
+            $ref: '#/definitions/response.Response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/entity.Response'
+            $ref: '#/definitions/response.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/entity.Response'
+            $ref: '#/definitions/response.Response'
       summary: Transfer payment
       tags:
       - transfer
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: User login to get access token
+      parameters:
+      - description: Inquiry request
+        in: body
+        name: InquiryRequest
+        required: true
+        schema:
+          $ref: '#/definitions/transfer.InquiryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: User login
+      tags:
+      - user
 schemes:
 - http
 - https
