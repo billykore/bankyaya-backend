@@ -20,13 +20,13 @@ https://netflixtechblog.com/ready-for-changes-with-hexagonal-architecture-b315ec
 │   │   ├── storage/    # Database implementation (Postgres, Redis, etc.).
 │   │   └── ...         # Other adapters.
 │   ├── application/    # Frameworks, database, and external APIs implementations.
-│   │   ├── qris/       # QRIS payment domain.
+│   │   ├── qrisAPI/       # QRIS payment domain.
 │   │   ├── scheduler/  # Transaction scheduler domain.
 │   │   ├── transfer/   # Intra-bank transfer domain.
 │   │   ├── user/       # User domain.
 │   │   └── ...         # Other domains.
 │   └── core/           # Core domain logic (Entities, Value Objects, Aggregates, Interfaces).
-│       ├── qris/       # QRIS payment domain.
+│       ├── qrisAPI/       # QRIS payment domain.
 │       ├── scheduler/  # Transaction scheduler domain.
 │       ├── transfer/   # Intra-bank transfer domain.
 │       ├── user/       # User domain.

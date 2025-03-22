@@ -3,9 +3,9 @@ package main
 import (
 	_ "github.com/joho/godotenv/autoload"
 	_ "go.bankyaya.org/app/backend/cmd/swagger/docs"
-	"go.bankyaya.org/app/backend/internal/adapter/http/server"
-	"go.bankyaya.org/app/backend/internal/adapter/messaging"
-	"go.bankyaya.org/app/backend/pkg/config"
+	"go.bankyaya.org/app/backend/pkg/framework/http/server"
+	"go.bankyaya.org/app/backend/pkg/framework/messaging"
+	"go.bankyaya.org/app/backend/pkg/util/config"
 )
 
 type app struct {

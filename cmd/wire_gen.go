@@ -8,31 +8,24 @@ package main
 
 import (
 	"github.com/labstack/echo/v4"
-	"go.bankyaya.org/app/backend/internal/adapter/auth"
-	corebanking2 "go.bankyaya.org/app/backend/internal/adapter/corebanking"
-	"go.bankyaya.org/app/backend/internal/adapter/email"
-	"go.bankyaya.org/app/backend/internal/adapter/http/handler"
-	"go.bankyaya.org/app/backend/internal/adapter/http/server"
-	"go.bankyaya.org/app/backend/internal/adapter/messaging"
-	qris2 "go.bankyaya.org/app/backend/internal/adapter/qris"
-	"go.bankyaya.org/app/backend/internal/adapter/storage/repo"
-	qris4 "go.bankyaya.org/app/backend/internal/application/qris"
-	scheduler2 "go.bankyaya.org/app/backend/internal/application/scheduler"
-	"go.bankyaya.org/app/backend/internal/application/transfer"
-	user2 "go.bankyaya.org/app/backend/internal/application/user"
-	qris3 "go.bankyaya.org/app/backend/internal/core/qris"
-	"go.bankyaya.org/app/backend/internal/core/scheduler"
-	transfer2 "go.bankyaya.org/app/backend/internal/core/transfer"
-	"go.bankyaya.org/app/backend/internal/core/user"
-	"go.bankyaya.org/app/backend/pkg/config"
-	"go.bankyaya.org/app/backend/pkg/corebanking"
-	"go.bankyaya.org/app/backend/pkg/db/postgres"
-	"go.bankyaya.org/app/backend/pkg/email/mailtrap"
-	"go.bankyaya.org/app/backend/pkg/httpclient"
-	"go.bankyaya.org/app/backend/pkg/logger"
-	"go.bankyaya.org/app/backend/pkg/messaging/rabbitmq"
-	"go.bankyaya.org/app/backend/pkg/qris"
-	"go.bankyaya.org/app/backend/pkg/validation"
+	"go.bankyaya.org/app/backend/pkg/framework/auth"
+	corebanking2 "go.bankyaya.org/app/backend/pkg/framework/corebanking"
+	"go.bankyaya.org/app/backend/pkg/framework/email"
+	"go.bankyaya.org/app/backend/pkg/framework/http/handler"
+	"go.bankyaya.org/app/backend/pkg/framework/http/server"
+	"go.bankyaya.org/app/backend/pkg/framework/messaging"
+	qris2 "go.bankyaya.org/app/backend/pkg/framework/qris"
+	"go.bankyaya.org/app/backend/pkg/framework/storage/repo"
+	"go.bankyaya.org/app/backend/pkg/service"
+	"go.bankyaya.org/app/backend/pkg/util/config"
+	"go.bankyaya.org/app/backend/pkg/util/corebanking"
+	"go.bankyaya.org/app/backend/pkg/util/db/postgres"
+	"go.bankyaya.org/app/backend/pkg/util/email/mailtrap"
+	"go.bankyaya.org/app/backend/pkg/util/httpclient"
+	"go.bankyaya.org/app/backend/pkg/util/logger"
+	"go.bankyaya.org/app/backend/pkg/util/messaging/rabbitmq"
+	"go.bankyaya.org/app/backend/pkg/util/qris"
+	"go.bankyaya.org/app/backend/pkg/util/validation"
 )
 
 import (
@@ -45,38 +38,34 @@ import (
 func initApp(cfg *config.Config) *app {
 	loggerLogger := logger.New()
 	echoEcho := echo.New()
-	validator := validation.New()
-	usecase := transfer.NewUsecase(validator, loggerLogger)
-	transferHandler := handler.NewTransferHandler(usecase)
+	db := postgres.New(cfg)
+	transferRepo := repo.NewTransferRepo(db)
 	client := httpclient.New()
 	corebankingClient := corebanking.NewClient(cfg, client)
-	corebankingQRIS := corebanking2.NewQRIS(corebankingClient)
+	coreBanking := corebanking2.New(corebankingClient)
+	mailtrapClient := mailtrap.NewClient(cfg)
+	transferEmail := email.NewTransferEmail(loggerLogger, mailtrapClient)
+	transfer := service.NewTransfer(loggerLogger, transferRepo, coreBanking, transferEmail)
+	handlerTransfer := handler.NewTransfer(transfer)
 	qrisClient := qris.NewClient(cfg, client)
 	qrisQRIS := qris2.NewQRIS(qrisClient)
-	service := qris3.NewService(loggerLogger, corebankingQRIS, qrisQRIS)
-	qrisUsecase := qris4.NewUsecase(validator, loggerLogger, service)
-	qrisHandler := handler.NewQRISHandler(qrisUsecase)
-	db := postgres.New(cfg)
+	qrisEmail := email.NewQRISEmail(loggerLogger, mailtrapClient)
+	serviceQRIS := service.NewQRIS(loggerLogger, coreBanking, qrisQRIS, qrisEmail)
+	handlerQRIS := handler.NewQRIS(serviceQRIS)
 	userRepo := repo.NewUserRepo(db)
 	bcryptHasher := auth.NewBcryptHasher(loggerLogger)
 	jwt := auth.NewJWT(loggerLogger)
-	userService := user.NewService(userRepo, bcryptHasher, jwt)
-	userUsecase := user2.NewUsecase(validator, loggerLogger, userService)
-	userHandler := handler.NewUserHandler(userUsecase)
+	user := service.NewUser(userRepo, bcryptHasher, jwt)
+	userHandler := handler.NewUserHandler(user)
+	validator := validation.New()
 	schedulerRepo := repo.NewSchedulerRepo(db)
 	connection := rabbitmq.NewConnection(cfg)
 	schedulerPublisher := messaging.NewSchedulerPublisher(cfg, loggerLogger, connection)
-	schedulerService := scheduler.NewService(loggerLogger, schedulerRepo, schedulerPublisher)
-	schedulerUsecase := scheduler2.NewUsecase(validator, loggerLogger, schedulerService)
-	schedulerHandler := handler.NewSchedulerHandler(schedulerUsecase)
-	router := server.NewRouter(cfg, loggerLogger, echoEcho, transferHandler, qrisHandler, userHandler, schedulerHandler)
+	scheduler := service.NewScheduler(loggerLogger, schedulerRepo, schedulerPublisher)
+	handlerScheduler := handler.NewScheduler(validator, scheduler)
+	router := server.NewRouter(cfg, loggerLogger, echoEcho, handlerTransfer, handlerQRIS, userHandler, handlerScheduler)
 	serverServer := server.New(router)
-	transferRepo := repo.NewTransferRepo(db)
-	corebankingTransfer := corebanking2.NewTransfer(corebankingClient)
-	mailtrapClient := mailtrap.NewClient(cfg)
-	transferEmail := email.NewTransferEmail(loggerLogger, mailtrapClient)
-	transferService := transfer2.NewService(transferRepo, corebankingTransfer, transferEmail)
-	transferConsumer := messaging.NewTransferConsumer(cfg, loggerLogger, connection, transferService)
+	transferConsumer := messaging.NewTransferConsumer(cfg, loggerLogger, connection, transfer)
 	listener := messaging.NewListener(loggerLogger, transferConsumer)
 	mainApp := newApp(serverServer, listener)
 	return mainApp
