@@ -8,24 +8,25 @@ package main
 
 import (
 	"github.com/labstack/echo/v4"
-	"go.bankyaya.org/app/backend/pkg/framework/auth"
-	corebanking2 "go.bankyaya.org/app/backend/pkg/framework/corebanking"
-	"go.bankyaya.org/app/backend/pkg/framework/email"
-	"go.bankyaya.org/app/backend/pkg/framework/http/handler"
-	"go.bankyaya.org/app/backend/pkg/framework/http/server"
-	"go.bankyaya.org/app/backend/pkg/framework/messaging"
-	qris2 "go.bankyaya.org/app/backend/pkg/framework/qris"
-	"go.bankyaya.org/app/backend/pkg/framework/storage/repo"
-	"go.bankyaya.org/app/backend/pkg/service"
-	"go.bankyaya.org/app/backend/pkg/util/config"
-	"go.bankyaya.org/app/backend/pkg/util/corebanking"
-	"go.bankyaya.org/app/backend/pkg/util/db/postgres"
-	"go.bankyaya.org/app/backend/pkg/util/email/mailtrap"
-	"go.bankyaya.org/app/backend/pkg/util/httpclient"
-	"go.bankyaya.org/app/backend/pkg/util/logger"
-	"go.bankyaya.org/app/backend/pkg/util/messaging/rabbitmq"
-	"go.bankyaya.org/app/backend/pkg/util/qris"
-	"go.bankyaya.org/app/backend/pkg/util/validation"
+	"go.bankyaya.org/app/backend/internal/adapter/auth"
+	corebanking2 "go.bankyaya.org/app/backend/internal/adapter/corebanking"
+	"go.bankyaya.org/app/backend/internal/adapter/email"
+	"go.bankyaya.org/app/backend/internal/adapter/http/handler"
+	"go.bankyaya.org/app/backend/internal/adapter/http/server"
+	"go.bankyaya.org/app/backend/internal/adapter/messaging"
+	qris2 "go.bankyaya.org/app/backend/internal/adapter/qris"
+	"go.bankyaya.org/app/backend/internal/adapter/sequence"
+	"go.bankyaya.org/app/backend/internal/adapter/storage/repo"
+	"go.bankyaya.org/app/backend/internal/core/service"
+	"go.bankyaya.org/app/backend/internal/pkg/config"
+	"go.bankyaya.org/app/backend/internal/pkg/corebanking"
+	"go.bankyaya.org/app/backend/internal/pkg/db/postgres"
+	"go.bankyaya.org/app/backend/internal/pkg/email/mailtrap"
+	"go.bankyaya.org/app/backend/internal/pkg/httpclient"
+	"go.bankyaya.org/app/backend/internal/pkg/logger"
+	"go.bankyaya.org/app/backend/internal/pkg/messaging/rabbitmq"
+	"go.bankyaya.org/app/backend/internal/pkg/qris"
+	"go.bankyaya.org/app/backend/internal/pkg/validation"
 )
 
 import (
@@ -43,9 +44,10 @@ func initApp(cfg *config.Config) *app {
 	client := httpclient.New()
 	corebankingClient := corebanking.NewClient(cfg, client)
 	coreBanking := corebanking2.New(corebankingClient)
+	sequenceSequence := sequence.New()
 	mailtrapClient := mailtrap.NewClient(cfg)
 	transferEmail := email.NewTransferEmail(loggerLogger, mailtrapClient)
-	transfer := service.NewTransfer(loggerLogger, transferRepo, coreBanking, transferEmail)
+	transfer := service.NewTransfer(loggerLogger, transferRepo, coreBanking, sequenceSequence, transferEmail)
 	handlerTransfer := handler.NewTransfer(transfer)
 	qrisClient := qris.NewClient(cfg, client)
 	qrisQRIS := qris2.NewQRIS(qrisClient)
@@ -55,7 +57,7 @@ func initApp(cfg *config.Config) *app {
 	userRepo := repo.NewUserRepo(db)
 	bcryptHasher := auth.NewBcryptHasher(loggerLogger)
 	jwt := auth.NewJWT(loggerLogger)
-	user := service.NewUser(userRepo, bcryptHasher, jwt)
+	user := service.NewUser(loggerLogger, userRepo, bcryptHasher, jwt)
 	userHandler := handler.NewUserHandler(user)
 	validator := validation.New()
 	schedulerRepo := repo.NewSchedulerRepo(db)

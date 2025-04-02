@@ -6,17 +6,17 @@ package main
 import (
 	"github.com/google/wire"
 	"github.com/labstack/echo/v4"
-	"go.bankyaya.org/app/backend/pkg/framework"
-	"go.bankyaya.org/app/backend/pkg/service"
-	"go.bankyaya.org/app/backend/pkg/util"
-	"go.bankyaya.org/app/backend/pkg/util/config"
+	"go.bankyaya.org/app/backend/internal/adapter"
+	"go.bankyaya.org/app/backend/internal/core"
+	"go.bankyaya.org/app/backend/internal/pkg"
+	"go.bankyaya.org/app/backend/internal/pkg/config"
 )
 
 func initApp(cfg *config.Config) *app {
 	wire.Build(
-		framework.ProviderSet,
-		service.ProviderSet,
-		util.ProviderSet,
+		adapter.ProviderSet,
+		core.ProviderSet,
+		pkg.ProviderSet,
 		echo.New,
 		newApp,
 	)
