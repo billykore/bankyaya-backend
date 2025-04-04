@@ -67,7 +67,7 @@ func (qris *QRIS) Inquiry(ctx context.Context, sourceAccount, qrCode string) (*e
 }
 
 func (qris *QRIS) Payment(ctx context.Context, data *entity.QRISData) (*entity.QRISPaymentResult, error) {
-	payRes, err := qris.qrisAPI.Pay(ctx, &entity.PaymentData{
+	payRes, err := qris.qrisAPI.Pay(ctx, &entity.QRISPaymentData{
 		AccountNumber:         data.SourceAccount,
 		QRCode:                data.QRCode,
 		RRN:                   data.RRN,
@@ -91,7 +91,7 @@ func (qris *QRIS) Payment(ctx context.Context, data *entity.QRISData) (*entity.Q
 		return nil, status.Error(codes.Unauthenticated, domain.ErrUserUnauthenticated)
 	}
 
-	sendErr := qris.sendTransferReceipt(ctx, entity.QRISEmailData{
+	err = qris.mailer.SendQRISReceipt(ctx, entity.QRISEmailData{
 		Subject:        qrisSuccessSubject,
 		Recipient:      user.Email,
 		Amount:         data.Amount,
@@ -103,27 +103,10 @@ func (qris *QRIS) Payment(ctx context.Context, data *entity.QRISData) (*entity.Q
 		TransactionRef: payRes.TransactionReference,
 		Note:           data.Note,
 	})
-	select {
-	case err := <-sendErr:
-		if err != nil {
-			qris.log.ServiceUsecase(qrisService, "sendTransferReceipt").Error(err)
-			return nil, status.Error(codes.Unauthenticated, domain.ErrSendEmailFailed)
-		}
-	default:
+	if err != nil {
+		qris.log.ServiceUsecase(qrisService, "sendTransferReceipt").Error(err)
+		return nil, status.Error(codes.Unauthenticated, domain.ErrSendEmailFailed)
 	}
 
 	return payRes, nil
-}
-
-// sendTransferReceipt is a dedicated function to handle the asynchronous sending of QRIS payment receipt emails.
-func (qris *QRIS) sendTransferReceipt(ctx context.Context, emailData entity.QRISEmailData) <-chan error {
-	errCh := make(chan error, 1)
-	go func() {
-		err := qris.mailer.SendQRISReceipt(ctx, emailData)
-		if err != nil {
-			errCh <- err
-			close(errCh)
-		}
-	}()
-	return errCh
 }

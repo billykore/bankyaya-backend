@@ -25,7 +25,7 @@ type QRISData struct {
 	Tip                          types.Money
 }
 
-type PaymentData struct {
+type QRISPaymentData struct {
 	AccountNumber         string
 	QRCode                string
 	RRN                   string

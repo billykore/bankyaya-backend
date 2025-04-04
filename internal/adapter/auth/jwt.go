@@ -6,7 +6,7 @@ import (
 	"go.bankyaya.org/app/backend/internal/core/entity"
 	"go.bankyaya.org/app/backend/internal/pkg/data"
 	"go.bankyaya.org/app/backend/internal/pkg/logger"
-	"go.bankyaya.org/app/backend/internal/pkg/security/token"
+	"go.bankyaya.org/app/backend/internal/pkg/token"
 )
 
 type JWT struct {

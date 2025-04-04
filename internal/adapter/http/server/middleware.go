@@ -7,7 +7,7 @@ import (
 	"go.bankyaya.org/app/backend/internal/adapter/http/response"
 	"go.bankyaya.org/app/backend/internal/pkg/config"
 	"go.bankyaya.org/app/backend/internal/pkg/ctxt"
-	"go.bankyaya.org/app/backend/internal/pkg/security/token"
+	"go.bankyaya.org/app/backend/internal/pkg/token"
 )
 
 // jwtConfig contains configuration for JWT auth middleware.

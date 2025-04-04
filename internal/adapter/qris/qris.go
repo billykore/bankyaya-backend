@@ -49,7 +49,7 @@ func (q *QRIS) GetDetails(ctx context.Context, accountNumber, qrCode string) (*e
 	}, nil
 }
 
-func (q *QRIS) Pay(ctx context.Context, data *entity.PaymentData) (*entity.QRISPaymentResult, error) {
+func (q *QRIS) Pay(ctx context.Context, data *entity.QRISPaymentData) (*entity.QRISPaymentResult, error) {
 	res, err := q.client.Payment(ctx, qris.PaymentRequest{
 		NoRekNasabah:     data.AccountNumber,
 		QRCode:           data.QRCode,

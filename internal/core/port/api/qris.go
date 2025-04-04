@@ -12,5 +12,5 @@ type QRIS interface {
 	GetDetails(ctx context.Context, accountNumber, qrCode string) (*entity.QRISData, error)
 
 	// Pay processes a payment using the QRIS (Quick Response Code Indonesian Standard) system.
-	Pay(ctx context.Context, data *entity.PaymentData) (*entity.QRISPaymentResult, error)
+	Pay(ctx context.Context, data *entity.QRISPaymentData) (*entity.QRISPaymentResult, error)
 }
