@@ -21,8 +21,8 @@ import (
 func TestCreateScheduleSuccess(t *testing.T) {
 	var (
 		repoMock      = repomock.NewScheduleRepository(t)
-		publisherMock = messagingmock.NewAutoDebitEventPublisher(t)
-		svc           = NewScheduler(logger.New(), repoMock, publisherMock)
+		processorMock = messagingmock.NewScheduledTransferProcessor(t)
+		svc           = NewScheduler(logger.New(), repoMock, processorMock)
 		ctx           = ctxt.ContextWithUser(context.Background(), data.User{
 			Id:       123,
 			CIF:      "1234567",
@@ -44,14 +44,14 @@ func TestCreateScheduleSuccess(t *testing.T) {
 	assert.NoError(t, err)
 
 	repoMock.AssertExpectations(t)
-	publisherMock.AssertExpectations(t)
+	processorMock.AssertExpectations(t)
 }
 
 func TestCreateScheduleFailed_GetUserFromContextFailed(t *testing.T) {
 	var (
 		repoMock      = repomock.NewScheduleRepository(t)
-		publisherMock = messagingmock.NewAutoDebitEventPublisher(t)
-		svc           = NewScheduler(logger.New(), repoMock, publisherMock)
+		processorMock = messagingmock.NewScheduledTransferProcessor(t)
+		svc           = NewScheduler(logger.New(), repoMock, processorMock)
 		ctx           = context.Background()
 	)
 
@@ -62,14 +62,14 @@ func TestCreateScheduleFailed_GetUserFromContextFailed(t *testing.T) {
 	assert.Equal(t, status.Error(codes.Unauthenticated, ctxt.ErrUserFromContext), err)
 
 	repoMock.AssertExpectations(t)
-	publisherMock.AssertExpectations(t)
+	processorMock.AssertExpectations(t)
 }
 
 func TestCreateScheduleFailed_SaveScheduleFailed(t *testing.T) {
 	var (
 		repoMock      = repomock.NewScheduleRepository(t)
-		publisherMock = messagingmock.NewAutoDebitEventPublisher(t)
-		svc           = NewScheduler(logger.New(), repoMock, publisherMock)
+		processorMock = messagingmock.NewScheduledTransferProcessor(t)
+		svc           = NewScheduler(logger.New(), repoMock, processorMock)
 		ctx           = ctxt.ContextWithUser(context.Background(), data.User{
 			Id:       123,
 			CIF:      "1234567",
@@ -88,14 +88,14 @@ func TestCreateScheduleFailed_SaveScheduleFailed(t *testing.T) {
 	assert.Equal(t, status.Error(codes.Internal, domain.ErrGeneral), err)
 
 	repoMock.AssertExpectations(t)
-	publisherMock.AssertExpectations(t)
+	processorMock.AssertExpectations(t)
 }
 
 func TestGetSchedulesSuccess(t *testing.T) {
 	var (
 		repoMock      = repomock.NewScheduleRepository(t)
-		publisherMock = messagingmock.NewAutoDebitEventPublisher(t)
-		svc           = NewScheduler(logger.New(), repoMock, publisherMock)
+		processorMock = messagingmock.NewScheduledTransferProcessor(t)
+		svc           = NewScheduler(logger.New(), repoMock, processorMock)
 		ctx           = ctxt.ContextWithUser(context.Background(), data.User{
 			Id:       123,
 			CIF:      "1234567",
@@ -114,14 +114,14 @@ func TestGetSchedulesSuccess(t *testing.T) {
 	assert.Equal(t, make([]*entity.Schedule, 3), schedules)
 
 	repoMock.AssertExpectations(t)
-	publisherMock.AssertExpectations(t)
+	processorMock.AssertExpectations(t)
 }
 
 func TestGetSchedulesFailed_GetUserFromContextFailed(t *testing.T) {
 	var (
 		repoMock      = repomock.NewScheduleRepository(t)
-		publisherMock = messagingmock.NewAutoDebitEventPublisher(t)
-		svc           = NewScheduler(logger.New(), repoMock, publisherMock)
+		processorMock = messagingmock.NewScheduledTransferProcessor(t)
+		svc           = NewScheduler(logger.New(), repoMock, processorMock)
 		ctx           = context.Background()
 	)
 
@@ -131,14 +131,14 @@ func TestGetSchedulesFailed_GetUserFromContextFailed(t *testing.T) {
 	assert.Equal(t, status.Error(codes.Unauthenticated, ctxt.ErrUserFromContext), err)
 
 	repoMock.AssertExpectations(t)
-	publisherMock.AssertExpectations(t)
+	processorMock.AssertExpectations(t)
 }
 
 func TestGetSchedulesFailed_GetSchedulesByUserIdNotFound(t *testing.T) {
 	var (
 		repoMock      = repomock.NewScheduleRepository(t)
-		publisherMock = messagingmock.NewAutoDebitEventPublisher(t)
-		svc           = NewScheduler(logger.New(), repoMock, publisherMock)
+		processorMock = messagingmock.NewScheduledTransferProcessor(t)
+		svc           = NewScheduler(logger.New(), repoMock, processorMock)
 		ctx           = ctxt.ContextWithUser(context.Background(), data.User{
 			Id:       123,
 			CIF:      "1234567",
@@ -156,14 +156,14 @@ func TestGetSchedulesFailed_GetSchedulesByUserIdNotFound(t *testing.T) {
 	assert.Equal(t, status.Error(codes.NotFound, domain.ErrScheduleNotFound), err)
 
 	repoMock.AssertExpectations(t)
-	publisherMock.AssertExpectations(t)
+	processorMock.AssertExpectations(t)
 }
 
 func TestGetSchedulesFailed_GetSchedulesByUserIdFailed(t *testing.T) {
 	var (
 		repoMock      = repomock.NewScheduleRepository(t)
-		publisherMock = messagingmock.NewAutoDebitEventPublisher(t)
-		svc           = NewScheduler(logger.New(), repoMock, publisherMock)
+		processorMock = messagingmock.NewScheduledTransferProcessor(t)
+		svc           = NewScheduler(logger.New(), repoMock, processorMock)
 		ctx           = ctxt.ContextWithUser(context.Background(), data.User{
 			Id:       123,
 			CIF:      "1234567",
@@ -181,14 +181,14 @@ func TestGetSchedulesFailed_GetSchedulesByUserIdFailed(t *testing.T) {
 	assert.Equal(t, status.Error(codes.Internal, domain.ErrGeneral), err)
 
 	repoMock.AssertExpectations(t)
-	publisherMock.AssertExpectations(t)
+	processorMock.AssertExpectations(t)
 }
 
 func TestGetScheduleByIdSuccess(t *testing.T) {
 	var (
 		repoMock      = repomock.NewScheduleRepository(t)
-		publisherMock = messagingmock.NewAutoDebitEventPublisher(t)
-		svc           = NewScheduler(logger.New(), repoMock, publisherMock)
+		processorMock = messagingmock.NewScheduledTransferProcessor(t)
+		svc           = NewScheduler(logger.New(), repoMock, processorMock)
 		ctx           = ctxt.ContextWithUser(context.Background(), data.User{
 			Id:       123,
 			CIF:      "1234567",
@@ -206,14 +206,14 @@ func TestGetScheduleByIdSuccess(t *testing.T) {
 	assert.Equal(t, &entity.Schedule{ID: 1}, schedule)
 
 	repoMock.AssertExpectations(t)
-	publisherMock.AssertExpectations(t)
+	processorMock.AssertExpectations(t)
 }
 
 func TestGetScheduleByIdFailed_GetScheduleByIdNotFound(t *testing.T) {
 	var (
 		repoMock      = repomock.NewScheduleRepository(t)
-		publisherMock = messagingmock.NewAutoDebitEventPublisher(t)
-		svc           = NewScheduler(logger.New(), repoMock, publisherMock)
+		processorMock = messagingmock.NewScheduledTransferProcessor(t)
+		svc           = NewScheduler(logger.New(), repoMock, processorMock)
 		ctx           = ctxt.ContextWithUser(context.Background(), data.User{
 			Id:       123,
 			CIF:      "1234567",
@@ -231,14 +231,14 @@ func TestGetScheduleByIdFailed_GetScheduleByIdNotFound(t *testing.T) {
 	assert.Equal(t, status.Error(codes.NotFound, domain.ErrScheduleNotFound), err)
 
 	repoMock.AssertExpectations(t)
-	publisherMock.AssertExpectations(t)
+	processorMock.AssertExpectations(t)
 }
 
 func TestGetScheduleByIdFailed_GetScheduleByIdFailed(t *testing.T) {
 	var (
 		repoMock      = repomock.NewScheduleRepository(t)
-		publisherMock = messagingmock.NewAutoDebitEventPublisher(t)
-		svc           = NewScheduler(logger.New(), repoMock, publisherMock)
+		processorMock = messagingmock.NewScheduledTransferProcessor(t)
+		svc           = NewScheduler(logger.New(), repoMock, processorMock)
 		ctx           = ctxt.ContextWithUser(context.Background(), data.User{
 			Id:       123,
 			CIF:      "1234567",
@@ -256,14 +256,14 @@ func TestGetScheduleByIdFailed_GetScheduleByIdFailed(t *testing.T) {
 	assert.Equal(t, status.Error(codes.Internal, domain.ErrGeneral), err)
 
 	repoMock.AssertExpectations(t)
-	publisherMock.AssertExpectations(t)
+	processorMock.AssertExpectations(t)
 }
 
 func TestDeleteScheduleSuccess(t *testing.T) {
 	var (
 		repoMock      = repomock.NewScheduleRepository(t)
-		publisherMock = messagingmock.NewAutoDebitEventPublisher(t)
-		svc           = NewScheduler(logger.New(), repoMock, publisherMock)
+		processorMock = messagingmock.NewScheduledTransferProcessor(t)
+		svc           = NewScheduler(logger.New(), repoMock, processorMock)
 		ctx           = ctxt.ContextWithUser(context.Background(), data.User{
 			Id:       123,
 			CIF:      "1234567",
@@ -280,14 +280,14 @@ func TestDeleteScheduleSuccess(t *testing.T) {
 	assert.NoError(t, err)
 
 	repoMock.AssertExpectations(t)
-	publisherMock.AssertExpectations(t)
+	processorMock.AssertExpectations(t)
 }
 
 func TestDeleteScheduleFailed_GetUserFromContextFailed(t *testing.T) {
 	var (
 		repoMock      = repomock.NewScheduleRepository(t)
-		publisherMock = messagingmock.NewAutoDebitEventPublisher(t)
-		svc           = NewScheduler(logger.New(), repoMock, publisherMock)
+		processorMock = messagingmock.NewScheduledTransferProcessor(t)
+		svc           = NewScheduler(logger.New(), repoMock, processorMock)
 		ctx           = context.Background()
 	)
 
@@ -296,14 +296,14 @@ func TestDeleteScheduleFailed_GetUserFromContextFailed(t *testing.T) {
 	assert.Equal(t, status.Error(codes.Unauthenticated, ctxt.ErrUserFromContext), err)
 
 	repoMock.AssertExpectations(t)
-	publisherMock.AssertExpectations(t)
+	processorMock.AssertExpectations(t)
 }
 
 func TestDeleteScheduleFailed_GetScheduleByIdFailed(t *testing.T) {
 	var (
 		repoMock      = repomock.NewScheduleRepository(t)
-		publisherMock = messagingmock.NewAutoDebitEventPublisher(t)
-		svc           = NewScheduler(logger.New(), repoMock, publisherMock)
+		processorMock = messagingmock.NewScheduledTransferProcessor(t)
+		svc           = NewScheduler(logger.New(), repoMock, processorMock)
 		ctx           = ctxt.ContextWithUser(context.Background(), data.User{
 			Id:       123,
 			CIF:      "1234567",
@@ -320,5 +320,33 @@ func TestDeleteScheduleFailed_GetScheduleByIdFailed(t *testing.T) {
 	assert.Equal(t, status.Error(codes.Internal, domain.ErrGeneral), err)
 
 	repoMock.AssertExpectations(t)
-	publisherMock.AssertExpectations(t)
+	processorMock.AssertExpectations(t)
+}
+
+func TestProcessScheduledTransferSuccess(t *testing.T) {
+	var (
+		repoMock      = repomock.NewScheduleRepository(t)
+		processorMock = messagingmock.NewScheduledTransferProcessor(t)
+		svc           = NewScheduler(logger.New(), repoMock, processorMock)
+		ctx           = ctxt.ContextWithUser(context.Background(), data.User{
+			Id:       123,
+			CIF:      "1234567",
+			FullName: "Olivia Rodrigo",
+			Email:    "olivia@gmail.com",
+		})
+	)
+
+	repoMock.EXPECT().GetTodaySchedules(mock.Anything, mock.Anything).
+		Return([]*entity.Schedule{
+			{Amount: "10000"},
+		}, nil)
+
+	processorMock.EXPECT().Process(ctx, mock.Anything).
+		Return(nil)
+
+	err := svc.ProcessScheduledTransfer(ctx)
+
+	assert.NoError(t, err)
+
+	repoMock.AssertExpectations(t)
 }

@@ -18,16 +18,16 @@ import (
 const schedulerService = "Scheduler"
 
 type Scheduler struct {
-	log       *logger.Logger
-	repo      repository.ScheduleRepository
-	publisher messaging.AutoDebitEventPublisher
+	log                        *logger.Logger
+	repo                       repository.ScheduleRepository
+	scheduledTransferProcessor messaging.ScheduledTransferProcessor
 }
 
-func NewScheduler(log *logger.Logger, repo repository.ScheduleRepository, publisher messaging.AutoDebitEventPublisher) *Scheduler {
+func NewScheduler(log *logger.Logger, repo repository.ScheduleRepository, scheduledTransferProcessor messaging.ScheduledTransferProcessor) *Scheduler {
 	return &Scheduler{
-		log:       log,
-		repo:      repo,
-		publisher: publisher,
+		log:                        log,
+		repo:                       repo,
+		scheduledTransferProcessor: scheduledTransferProcessor,
 	}
 }
 
@@ -94,24 +94,24 @@ func (s *Scheduler) Delete(ctx context.Context, scheduleId int) error {
 	return nil
 }
 
-func (s *Scheduler) PublishAutoDebit(ctx context.Context) error {
+func (s *Scheduler) ProcessScheduledTransfer(ctx context.Context) error {
 	schedules, err := s.repo.GetTodaySchedules(ctx, "")
 	if err != nil {
-		s.log.ServiceUsecase(schedulerService, "PublishAutoDebit").Errorf("GetTodaySchedules: %v", err)
+		s.log.ServiceUsecase(schedulerService, "ProcessScheduledTransfer").Errorf("GetTodaySchedules: %v", err)
 		if errors.Is(err, domain.ErrNoScheduleForToday) {
 			return status.Error(codes.NotFound, err)
 		}
 		return status.Error(codes.Internal, domain.ErrGeneral)
 	}
 
-	var publishErr error
+	var processErr error
 	for _, schedule := range schedules {
 		amount, err := types.ParseMoney(schedule.Amount)
 		if err != nil {
-			publishErr = errors.Join(publishErr, err)
+			processErr = errors.Join(processErr, err)
 		}
 
-		err = s.publisher.Publish(ctx, &entity.TransferRequest{
+		err = s.scheduledTransferProcessor.Process(ctx, &entity.TransferRequest{
 			ScheduleId:    schedule.ID,
 			Destination:   schedule.Destination,
 			Amount:        amount,
@@ -124,11 +124,11 @@ func (s *Scheduler) PublishAutoDebit(ctx context.Context) error {
 			DeviceId:      "",
 		})
 		if err != nil {
-			publishErr = errors.Join(publishErr, err)
+			processErr = errors.Join(processErr, err)
 		}
 	}
-	if publishErr != nil {
-		s.log.ServiceUsecase(schedulerService, "PublishAutoDebit").Errorf("PublishAutoDebit: %v", publishErr)
+	if processErr != nil {
+		s.log.ServiceUsecase(schedulerService, "ProcessScheduledTransfer").Errorf("ProcessScheduledTransfer: %v", processErr)
 		return status.Error(codes.Internal, err)
 	}
 
