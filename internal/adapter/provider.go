@@ -31,7 +31,7 @@ var emailProviderSet = wire.NewSet(
 )
 
 var notificationProviderSet = wire.NewSet(
-	notification.NewIntrabankNotification,
+	notification.NewIntrabankNotification, wire.Bind(new(intrabank.Notifier), new(*notification.IntrabankNotification)),
 )
 
 var sequencerProviderSet = wire.NewSet(

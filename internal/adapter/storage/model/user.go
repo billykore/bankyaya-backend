@@ -9,7 +9,7 @@ type User struct {
 	FullName      string    `gorm:"column:FULL_NAME"`
 	Email         string    `gorm:"column:EMAIL"`
 	PhoneNumber   string    `gorm:"column:PHONE_NUMBER"`
-	IdentityNo    string    `gorm:"column:KTP_NUMBER"`
+	KTPNumber     string    `gorm:"column:KTP_NUMBER"`
 	CreateDate    time.Time `gorm:"column:CREATE_DATE"`
 	AuthData      AuthData  `gorm:"foreignKey:AuthDataID"`
 }

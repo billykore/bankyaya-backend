@@ -33,12 +33,12 @@ func (r *UserRepo) GetUserByPhoneNumber(ctx context.Context, phoneNumber string)
 		return nil, err
 	}
 	return &user.User{
-		ID:             u.ID,
-		AccountNumber:  u.AccountNumber,
-		FullName:       u.FullName,
-		Email:          u.Email,
-		PhoneNumber:    u.PhoneNumber,
-		IdentityNumber: u.IdentityNo,
+		ID:            u.ID,
+		AccountNumber: u.AccountNumber,
+		FullName:      u.FullName,
+		Email:         u.Email,
+		PhoneNumber:   u.PhoneNumber,
+		NIK:           u.KTPNumber,
 		Device: &user.Device{
 			FirebaseId:    u.AuthData.FirebaseId,
 			DeviceId:      u.AuthData.DeviceId,

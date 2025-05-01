@@ -35,6 +35,7 @@ func NewService(
 	corebanking CoreBanking,
 	seqGen SequenceGenerator,
 	mailer ReceiptMailer,
+	notifier Notifier,
 ) *Service {
 	return &Service{
 		log:         log,
@@ -42,6 +43,7 @@ func NewService(
 		repo:        repo,
 		seqGen:      seqGen,
 		mailer:      mailer,
+		notifier:    notifier,
 	}
 }
 

@@ -6,34 +6,51 @@
 // (e.g., database, HTTP) and application layers.
 package user
 
-import (
-	"context"
-	"time"
-)
+import "time"
 
-// Repository defines methods for managing user persistence.
-type Repository interface {
-	// GetUserByPhoneNumber retrieves a user from the database by their phone number.
-	// Requires a context and a string phone number as input parameters.
-	// Returns a User object and an error if retrieval fails.
-	GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (*User, error)
+// User represents a user in the system.
+// It contains personal and account-related information, including identifiers,
+// contact details, and device information.
+type User struct {
+	ID            int
+	CIF           string
+	Password      string
+	AccountNumber string
+	FullName      string
+	Email         string
+	PhoneNumber   string
+	NIK           string
+	Device        *Device
 }
 
-// TokenService defines methods for creating and validating authorization tokens.
-type TokenService interface {
-	// Create generates a new token for a given user ID and expiration time.
-	Create(user *User, duration time.Duration) (*Token, error)
+// The Device represents a user's device information used for authentication,
+// push notifications, and security checks.
+type Device struct {
+	FirebaseId    string
+	DeviceId      string
+	IsBlacklisted bool
 }
 
-// PasswordHasher defines an interface for hashing and verifying passwords.
-type PasswordHasher interface {
-	// Hash generates a hashed representation of the given password.
-	// password: The plain-text password to hash.
-	// Returns the hashed password string and an error if hashing fails.
-	Hash(password string) (string, error)
+// Valid checks whether the provided device credentials match the device's credentials.
+func (d *Device) Valid(firebaseId string, deviceId string) bool {
+	return d.ValidFirebaseId(firebaseId) && d.ValidDeviceId(deviceId)
+}
 
-	// Compare checks whether the provided plain-text password matches the given hashed password.
-	// password: The plain-text password input. hashed: The stored hashed password.
-	// Returns true if the password matches, otherwise false.
-	Compare(password, hashed string) bool
+// ValidFirebaseId checks whether the provided Firebase ID matches the device's Firebase ID.
+func (d *Device) ValidFirebaseId(firebaseId string) bool {
+	return firebaseId == d.FirebaseId
+}
+
+// ValidDeviceId checks whether the provided device ID matches the device's ID.
+func (d *Device) ValidDeviceId(deviceId string) bool {
+	return deviceId == d.DeviceId
+}
+
+// The Token represents an authentication token issued to a user or client.
+// It contains the access token string, its type (e.g., "Bearer"), and the expiration time.
+// This struct is typically used in authentication flows such as OAuth2 or JWT-based systems.
+type Token struct {
+	AccessToken string
+	TokenType   string
+	ExpiresAt   time.Time
 }

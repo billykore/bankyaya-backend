@@ -49,3 +49,9 @@ generate-swagger:
 .PHONY: lint
 lint:
 	@./scripts/lint.sh
+
+# Example:
+# make generate-mocks
+.PHONY: generate-mocks
+generate-mocks:
+	@./scripts/mocks.sh

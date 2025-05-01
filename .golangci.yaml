@@ -1,0 +1,22 @@
+version: "2"
+linters:
+  default: all
+  enable:
+    - funlen
+  settings:
+    funlen:
+      lines: 60
+formatters:
+  # See the dedicated "formatters" documentation section.
+issues:
+  # See the dedicated "issues" documentation section.
+# Output configuration options.
+output:
+  # See the dedicated "output" documentation section.
+# Options for analysis running.
+run:
+  # See the dedicated "run" documentation section.
+  timeout: 30s
+severity:
+  # See the dedicated "severity" documentation section.
+  default: error

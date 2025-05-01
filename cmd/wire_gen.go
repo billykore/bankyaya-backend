@@ -12,6 +12,7 @@ import (
 	"go.bankyaya.org/app/backend/internal/adapter/email"
 	"go.bankyaya.org/app/backend/internal/adapter/http/handler"
 	"go.bankyaya.org/app/backend/internal/adapter/http/server"
+	"go.bankyaya.org/app/backend/internal/adapter/notification"
 	"go.bankyaya.org/app/backend/internal/adapter/password"
 	"go.bankyaya.org/app/backend/internal/adapter/sequence"
 	"go.bankyaya.org/app/backend/internal/adapter/storage/repo"
@@ -24,6 +25,7 @@ import (
 	"go.bankyaya.org/app/backend/internal/pkg/email/mailtrap"
 	"go.bankyaya.org/app/backend/internal/pkg/httpclient"
 	"go.bankyaya.org/app/backend/internal/pkg/logger"
+	"go.bankyaya.org/app/backend/internal/pkg/notification/firebase"
 )
 
 import (
@@ -44,7 +46,9 @@ func initApp(cfg *config.Configs) *app {
 	uuid := sequence.New()
 	mailtrapClient := mailtrap.NewClient(cfg)
 	intrabankEmail := email.NewTransferEmail(loggerLogger, mailtrapClient)
-	service := intrabank.NewService(loggerLogger, intrabankRepo, intrabankCoreBanking, uuid, intrabankEmail)
+	firebaseClient := firebase.New()
+	intrabankNotification := notification.NewIntrabankNotification(firebaseClient)
+	service := intrabank.NewService(loggerLogger, intrabankRepo, intrabankCoreBanking, uuid, intrabankEmail, intrabankNotification)
 	handlerIntrabank := handler.NewIntrabankHandler(service)
 	userRepo := repo.NewUserRepo(db)
 	bcryptHasher := password.NewBcryptHasher(loggerLogger)

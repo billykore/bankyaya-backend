@@ -1,5 +1,5 @@
-// Package config contains all the services configuration values.
-// The configuration is from .env file.
+// Package config contains all the service configuration values.
+// The configuration is from the config.yaml file.
 package config
 
 import (
@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/viper"
 	"go.bankyaya.org/app/backend/internal/pkg/config/internal"
+	"go.bankyaya.org/app/backend/internal/pkg/logger"
 )
 
 var _once sync.Once
@@ -29,19 +30,21 @@ type Config struct {
 
 // Load loads application configuration from a YAML file using Viper.
 func Load() *Configs {
+	log := logger.New()
+
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 
 	if err := viper.ReadInConfig(); err != nil {
-		panic(err)
+		log.Fatalf("failed to read config file: %v", err)
 	}
 
 	var cfg Config
 	_once.Do(func() {
 		err := viper.Unmarshal(&cfg)
 		if err != nil {
-			panic(err)
+			log.Fatalf("failed to unmarshal config: %v", err)
 		}
 	})
 
