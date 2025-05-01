@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"go.bankyaya.org/app/backend/internal/pkg/datetime"
 	"go.bankyaya.org/app/backend/internal/pkg/status"
 )
 
@@ -64,6 +63,14 @@ func Unauthorized(err error) (int, *Response) {
 	}
 }
 
+func Forbidden(err error) (int, *Response) {
+	return http.StatusForbidden, &Response{
+		Status:     "FORBIDDEN",
+		Message:    err.Error(),
+		ServerTime: currentServerTime(),
+	}
+}
+
 // InternalServerError returns status code 500 and error response.
 func InternalServerError(err error) (int, *Response) {
 	return http.StatusInternalServerError, &Response{
@@ -75,7 +82,7 @@ func InternalServerError(err error) (int, *Response) {
 
 // currentServerTime provides the current server time using the default time layout.
 func currentServerTime() string {
-	return time.Now().Format(datetime.DefaultTimeLayout)
+	return time.Now().String()
 }
 
 var responseCode = []int{

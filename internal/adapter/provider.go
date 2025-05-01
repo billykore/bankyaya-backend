@@ -2,61 +2,50 @@ package adapter
 
 import (
 	"github.com/google/wire"
-	"go.bankyaya.org/app/backend/internal/adapter/auth"
 	"go.bankyaya.org/app/backend/internal/adapter/corebanking"
 	"go.bankyaya.org/app/backend/internal/adapter/email"
 	"go.bankyaya.org/app/backend/internal/adapter/http/handler"
 	"go.bankyaya.org/app/backend/internal/adapter/http/server"
-	"go.bankyaya.org/app/backend/internal/adapter/messaging"
-	"go.bankyaya.org/app/backend/internal/adapter/qris"
+	"go.bankyaya.org/app/backend/internal/adapter/notification"
+	"go.bankyaya.org/app/backend/internal/adapter/password"
 	"go.bankyaya.org/app/backend/internal/adapter/sequence"
 	"go.bankyaya.org/app/backend/internal/adapter/storage/repo"
-	"go.bankyaya.org/app/backend/internal/core/port/api"
-	emailport "go.bankyaya.org/app/backend/internal/core/port/email"
-	messagingport "go.bankyaya.org/app/backend/internal/core/port/messaging"
-	repositoryport "go.bankyaya.org/app/backend/internal/core/port/repository"
-	"go.bankyaya.org/app/backend/internal/core/port/security"
+	"go.bankyaya.org/app/backend/internal/adapter/token"
+	"go.bankyaya.org/app/backend/internal/domain/intrabank"
+	"go.bankyaya.org/app/backend/internal/domain/user"
 )
 
-var authProviderSet = wire.NewSet(
-	auth.NewJWT, wire.Bind(new(security.TokenService), new(*auth.JWT)),
-	auth.NewBcryptHasher, wire.Bind(new(security.PasswordHasher), new(*auth.BcryptHasher)),
+var tokenProviderSet = wire.NewSet(
+	token.NewJWT, wire.Bind(new(user.TokenService), new(*token.JWT)),
 )
+
+var passwordProviderSet = wire.NewSet(
+	password.NewBcryptHasher, wire.Bind(new(user.PasswordHasher), new(*password.BcryptHasher)))
 
 var coreBankingProviderSet = wire.NewSet(
-	corebanking.New, wire.Bind(new(api.CoreBanking), new(*corebanking.CoreBanking)),
+	corebanking.NewIntrabankCoreBanking, wire.Bind(new(intrabank.CoreBanking), new(*corebanking.IntrabankCoreBanking)),
 )
 
 var emailProviderSet = wire.NewSet(
-	email.NewQRISEmail, wire.Bind(new(emailport.QRISReceiptMailer), new(*email.QRISEmail)),
-	email.NewTransferEmail, wire.Bind(new(emailport.TransferReceiptMailer), new(*email.TransferEmail)),
+	email.NewTransferEmail, wire.Bind(new(intrabank.ReceiptMailer), new(*email.IntrabankEmail)),
 )
 
-var messagingProviderSet = wire.NewSet(
-	messaging.NewSchedulerPublisher, wire.Bind(new(messagingport.AutoDebitEventPublisher), new(*messaging.SchedulerPublisher)),
-	messaging.NewTransferConsumer,
-	messaging.NewListener,
-)
-
-var qrisProviderSet = wire.NewSet(
-	qris.NewQRIS, wire.Bind(new(api.QRIS), new(*qris.QRIS)),
+var notificationProviderSet = wire.NewSet(
+	notification.NewIntrabankNotification,
 )
 
 var sequencerProviderSet = wire.NewSet(
-	sequence.New, wire.Bind(new(security.SequenceGenerator), new(*sequence.Sequence)),
+	sequence.New, wire.Bind(new(intrabank.SequenceGenerator), new(*sequence.UUID)),
 )
 
 var repositoryProviderSet = wire.NewSet(
-	repo.NewTransferRepo, wire.Bind(new(repositoryport.TransferRepository), new(*repo.TransferRepo)),
-	repo.NewUserRepo, wire.Bind(new(repositoryport.UserRepository), new(*repo.UserRepo)),
-	repo.NewSchedulerRepo, wire.Bind(new(repositoryport.ScheduleRepository), new(*repo.SchedulerRepo)),
+	repo.NewIntrabankRepo, wire.Bind(new(intrabank.Repository), new(*repo.IntrabankRepo)),
+	repo.NewUserRepo, wire.Bind(new(user.Repository), new(*repo.UserRepo)),
 )
 
 var handlerProviderSet = wire.NewSet(
-	handler.NewTransfer,
-	handler.NewQRIS,
+	handler.NewIntrabankHandler,
 	handler.NewUserHandler,
-	handler.NewScheduler,
 )
 
 var serverProviderSet = wire.NewSet(
@@ -65,11 +54,11 @@ var serverProviderSet = wire.NewSet(
 )
 
 var ProviderSet = wire.NewSet(
-	authProviderSet,
+	tokenProviderSet,
+	passwordProviderSet,
 	coreBankingProviderSet,
 	emailProviderSet,
-	messagingProviderSet,
-	qrisProviderSet,
+	notificationProviderSet,
 	sequencerProviderSet,
 	repositoryProviderSet,
 	handlerProviderSet,

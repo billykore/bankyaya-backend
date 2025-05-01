@@ -30,7 +30,7 @@ type Client struct {
 }
 
 // NewClient initializes and returns a new Client instance with the given configuration.
-func NewClient(cfg *config.Config, httpClient *http.Client) *Client {
+func NewClient(cfg *config.Configs, httpClient *http.Client) *Client {
 	return &Client{
 		httpClient: httpClient,
 		url:        cfg.CoreBanking.URL,

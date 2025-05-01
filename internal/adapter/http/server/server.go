@@ -2,9 +2,10 @@ package server
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	echoSwagger "github.com/swaggo/echo-swagger"
+	echomiddleware "github.com/labstack/echo/v4/middleware"
+	echoswagger "github.com/swaggo/echo-swagger"
 	"go.bankyaya.org/app/backend/internal/adapter/http/handler"
+	"go.bankyaya.org/app/backend/internal/adapter/http/middleware"
 	"go.bankyaya.org/app/backend/internal/pkg/config"
 	"go.bankyaya.org/app/backend/internal/pkg/logger"
 )
@@ -26,49 +27,43 @@ func (s *Server) Serve() {
 	s.router.Run()
 }
 
-// Router get all request to handlers and returns the response produce by handlers.
+// Router gets all requests to handlers and returns the response produce by handlers.
 type Router struct {
-	cfg              *config.Config
+	cfg              *config.Configs
 	log              *logger.Logger
 	router           *echo.Echo
-	transferHandler  *handler.Transfer
-	qrisHandler      *handler.QRIS
+	intrabankHandler *handler.Intrabank
 	userHandler      *handler.UserHandler
-	schedulerHandler *handler.Scheduler
 }
 
 // NewRouter returns new Router.
 func NewRouter(
-	cfg *config.Config,
+	cfg *config.Configs,
 	log *logger.Logger,
 	router *echo.Echo,
-	transferHandler *handler.Transfer,
-	qrisHandler *handler.QRIS,
+	transferHandler *handler.Intrabank,
 	userHandler *handler.UserHandler,
-	schedulerHandler *handler.Scheduler,
 ) *Router {
 	return &Router{
 		cfg:              cfg,
 		log:              log,
 		router:           router,
-		transferHandler:  transferHandler,
-		qrisHandler:      qrisHandler,
+		intrabankHandler: transferHandler,
 		userHandler:      userHandler,
-		schedulerHandler: schedulerHandler,
 	}
 }
 
 func (r *Router) useMiddlewares() {
-	r.router.Use(middleware.Logger())
-	r.router.Use(middleware.Recover())
+	r.router.Use(echomiddleware.Logger())
+	r.router.Use(echomiddleware.Recover())
 }
 
 func (r *Router) swagger() {
-	r.router.GET("/swagger/*", echoSwagger.WrapHandler)
+	r.router.GET("/swagger/*", echoswagger.WrapHandler)
 }
 
 func (r *Router) run() {
-	port := r.cfg.HTTP.Port
+	port := r.cfg.App.Port
 	r.log.Infof("running on port ::[:%v]", port)
 	if err := r.router.Start(":" + port); err != nil {
 		r.log.Fatalf("failed to run on port [::%v]", port)
@@ -80,38 +75,18 @@ func (r *Router) Run() {
 	r.useMiddlewares()
 	r.swagger()
 	r.setTransferRoutes()
-	r.setQRISRoutes()
 	r.setUserRoutes()
-	r.setSchedulerRoutes()
 	r.run()
 }
 
 func (r *Router) setTransferRoutes() {
-	tr := r.router.Group("/transfer")
-	tr.Use(authMiddleware())
+	tr := r.router.Group("/transfer/intrabank")
+	tr.Use(middleware.AuthenticateUser())
 
-	tr.POST("/inquiry", r.transferHandler.Inquiry)
-	tr.POST("/payment", r.transferHandler.Payment)
-}
-
-func (r *Router) setQRISRoutes() {
-	qr := r.router.Group("/qris")
-	qr.Use(authMiddleware())
-
-	qr.POST("/inquiry", r.qrisHandler.Inquiry)
-	qr.POST("/payment", r.qrisHandler.Payment)
+	tr.POST("/inquiry", r.intrabankHandler.Inquiry)
+	tr.POST("/payment", r.intrabankHandler.Payment)
 }
 
 func (r *Router) setUserRoutes() {
 	r.router.POST("/user/login", r.userHandler.Login)
-}
-
-func (r *Router) setSchedulerRoutes() {
-	sr := r.router.Group("/schedules")
-	sr.Use(authMiddleware())
-
-	sr.POST("", r.schedulerHandler.CreateSchedule)
-	sr.GET("", r.schedulerHandler.GetSchedules)
-	sr.GET("/:scheduleId", r.schedulerHandler.GetSchedule)
-	sr.DELETE("/:scheduleId", r.schedulerHandler.DeleteSchedule)
 }

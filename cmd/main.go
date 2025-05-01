@@ -4,19 +4,16 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	_ "go.bankyaya.org/app/backend/cmd/swagger/docs"
 	"go.bankyaya.org/app/backend/internal/adapter/http/server"
-	"go.bankyaya.org/app/backend/internal/adapter/messaging"
 	"go.bankyaya.org/app/backend/internal/pkg/config"
 )
 
 type app struct {
 	ss *server.Server
-	ls *messaging.Listener
 }
 
-func newApp(ss *server.Server, ls *messaging.Listener) *app {
+func newApp(ss *server.Server) *app {
 	return &app{
 		ss: ss,
-		ls: ls,
 	}
 }
 
@@ -35,9 +32,8 @@ func newApp(ss *server.Server, ls *messaging.Listener) *app {
 //	@schemes		http https
 //	@BasePath		/api/v1
 func main() {
-	c := config.Get()
+	c := config.Load()
 	a := initApp(c)
 
 	a.ss.Serve()
-	go a.ls.Listen()
 }

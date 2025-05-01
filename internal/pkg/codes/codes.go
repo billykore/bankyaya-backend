@@ -5,7 +5,7 @@ type Code int
 
 const (
 	// OK is success code.
-	_ Code = iota
+	_ Code = iota // OK
 
 	// BadRequest represents a code indicating a bad request error.
 	BadRequest

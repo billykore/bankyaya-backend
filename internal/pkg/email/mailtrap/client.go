@@ -25,7 +25,7 @@ type Client struct {
 }
 
 // NewClient returns new Client.
-func NewClient(cfg *config.Config) *Client {
+func NewClient(cfg *config.Configs) *Client {
 	return &Client{
 		from:     cfg.Email.From,
 		host:     cfg.Email.Host,

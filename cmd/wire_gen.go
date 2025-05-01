@@ -8,25 +8,22 @@ package main
 
 import (
 	"github.com/labstack/echo/v4"
-	"go.bankyaya.org/app/backend/internal/adapter/auth"
 	corebanking2 "go.bankyaya.org/app/backend/internal/adapter/corebanking"
 	"go.bankyaya.org/app/backend/internal/adapter/email"
 	"go.bankyaya.org/app/backend/internal/adapter/http/handler"
 	"go.bankyaya.org/app/backend/internal/adapter/http/server"
-	"go.bankyaya.org/app/backend/internal/adapter/messaging"
-	qris2 "go.bankyaya.org/app/backend/internal/adapter/qris"
+	"go.bankyaya.org/app/backend/internal/adapter/password"
 	"go.bankyaya.org/app/backend/internal/adapter/sequence"
 	"go.bankyaya.org/app/backend/internal/adapter/storage/repo"
-	"go.bankyaya.org/app/backend/internal/core/service"
+	"go.bankyaya.org/app/backend/internal/adapter/token"
+	"go.bankyaya.org/app/backend/internal/domain/intrabank"
+	"go.bankyaya.org/app/backend/internal/domain/user"
 	"go.bankyaya.org/app/backend/internal/pkg/config"
 	"go.bankyaya.org/app/backend/internal/pkg/corebanking"
 	"go.bankyaya.org/app/backend/internal/pkg/db/postgres"
 	"go.bankyaya.org/app/backend/internal/pkg/email/mailtrap"
 	"go.bankyaya.org/app/backend/internal/pkg/httpclient"
 	"go.bankyaya.org/app/backend/internal/pkg/logger"
-	"go.bankyaya.org/app/backend/internal/pkg/messaging/rabbitmq"
-	"go.bankyaya.org/app/backend/internal/pkg/qris"
-	"go.bankyaya.org/app/backend/internal/pkg/validation"
 )
 
 import (
@@ -36,39 +33,26 @@ import (
 
 // Injectors from wire.go:
 
-func initApp(cfg *config.Config) *app {
+func initApp(cfg *config.Configs) *app {
 	loggerLogger := logger.New()
 	echoEcho := echo.New()
 	db := postgres.New(cfg)
-	transferRepo := repo.NewTransferRepo(db)
+	intrabankRepo := repo.NewIntrabankRepo(db)
 	client := httpclient.New()
 	corebankingClient := corebanking.NewClient(cfg, client)
-	coreBanking := corebanking2.New(corebankingClient)
-	sequenceSequence := sequence.New()
+	intrabankCoreBanking := corebanking2.NewIntrabankCoreBanking(corebankingClient)
+	uuid := sequence.New()
 	mailtrapClient := mailtrap.NewClient(cfg)
-	transferEmail := email.NewTransferEmail(loggerLogger, mailtrapClient)
-	transfer := service.NewTransfer(loggerLogger, transferRepo, coreBanking, sequenceSequence, transferEmail)
-	handlerTransfer := handler.NewTransfer(transfer)
-	qrisClient := qris.NewClient(cfg, client)
-	qrisQRIS := qris2.NewQRIS(qrisClient)
-	qrisEmail := email.NewQRISEmail(loggerLogger, mailtrapClient)
-	serviceQRIS := service.NewQRIS(loggerLogger, coreBanking, qrisQRIS, qrisEmail)
-	handlerQRIS := handler.NewQRIS(serviceQRIS)
+	intrabankEmail := email.NewTransferEmail(loggerLogger, mailtrapClient)
+	service := intrabank.NewService(loggerLogger, intrabankRepo, intrabankCoreBanking, uuid, intrabankEmail)
+	handlerIntrabank := handler.NewIntrabankHandler(service)
 	userRepo := repo.NewUserRepo(db)
-	bcryptHasher := auth.NewBcryptHasher(loggerLogger)
-	jwt := auth.NewJWT(loggerLogger)
-	user := service.NewUser(loggerLogger, userRepo, bcryptHasher, jwt)
-	userHandler := handler.NewUserHandler(user)
-	validator := validation.New()
-	schedulerRepo := repo.NewSchedulerRepo(db)
-	connection := rabbitmq.NewConnection(cfg)
-	schedulerPublisher := messaging.NewSchedulerPublisher(cfg, loggerLogger, connection)
-	scheduler := service.NewScheduler(loggerLogger, schedulerRepo, schedulerPublisher)
-	handlerScheduler := handler.NewScheduler(validator, scheduler)
-	router := server.NewRouter(cfg, loggerLogger, echoEcho, handlerTransfer, handlerQRIS, userHandler, handlerScheduler)
+	bcryptHasher := password.NewBcryptHasher(loggerLogger)
+	jwt := token.NewJWT(cfg)
+	userService := user.NewService(loggerLogger, userRepo, bcryptHasher, jwt)
+	userHandler := handler.NewUserHandler(userService)
+	router := server.NewRouter(cfg, loggerLogger, echoEcho, handlerIntrabank, userHandler)
 	serverServer := server.New(router)
-	transferConsumer := messaging.NewTransferConsumer(cfg, loggerLogger, connection, transfer)
-	listener := messaging.NewListener(loggerLogger, transferConsumer)
-	mainApp := newApp(serverServer, listener)
+	mainApp := newApp(serverServer)
 	return mainApp
 }

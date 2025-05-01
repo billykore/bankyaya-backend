@@ -10,26 +10,26 @@ https://netflixtechblog.com/ready-for-changes-with-hexagonal-architecture-b315ec
 # Project Structure
 
 ```text
-├── cmd/                # Entry points for the application (e.g., HTTP server, CLI, etc.).
+├── cmd/                # Entry points for the application (e.g., App server, CLI, etc.).
 ├── internal/           # Application core logic.
 │   ├── adapter/        # Frameworks, database, and external APIs implementations.
 │   │   ├── api/        # External API handlers.
-│   │   ├── email/      # Email service handlers.
-│   │   ├── http/       # HTTP server (Handlers, Routers).
+│   │   ├── email/      # Email domain handlers.
+│   │   ├── http/       # App server (Handlers, Routers).
 │   │   ├── messaging/  # Message broker  implementation (RabbitMQ, Kafka, etc.).
 │   │   ├── storage/    # Database implementation (Postgres, Redis, etc.).
 │   │   └── ...         # Other adapters.
 │   ├── application/    # Frameworks, database, and external APIs implementations.
-│   │   ├── qrisAPI/       # QRIS payment domain.
-│   │   ├── scheduler/  # Transaction scheduler domain.
-│   │   ├── transfer/   # Intra-bank transfer domain.
-│   │   ├── user/       # User domain.
+│   │   ├── qrisAPI/       # QRIS payment usecase.
+│   │   ├── scheduler/  # Transaction scheduler usecase.
+│   │   ├── transfer/   # Intra-bank transfer usecase.
+│   │   ├── user/       # User usecase.
 │   │   └── ...         # Other domains.
-│   └── core/           # Core domain logic (Entities, Value Objects, Aggregates, Interfaces).
-│       ├── qrisAPI/       # QRIS payment domain.
-│       ├── scheduler/  # Transaction scheduler domain.
-│       ├── transfer/   # Intra-bank transfer domain.
-│       ├── user/       # User domain.
+│   └── core/           # Core usecase logic (Entities, Value Objects, Aggregates, Interfaces).
+│       ├── qrisAPI/       # QRIS payment usecase.
+│       ├── scheduler/  # Transaction scheduler usecase.
+│       ├── transfer/   # Intra-bank transfer usecase.
+│       ├── user/       # User usecase.
 │       └── ...         # Other domains.
 ├── pkg/                # Shared libraries or utilities.
 ├── script/             # Utility scripts.

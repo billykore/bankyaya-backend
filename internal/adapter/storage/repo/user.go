@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	pkgerrors "go.bankyaya.org/app/backend/internal/core/domain"
-	"go.bankyaya.org/app/backend/internal/core/entity"
+	"go.bankyaya.org/app/backend/internal/adapter/storage/model"
+	"go.bankyaya.org/app/backend/internal/domain/user"
 	"gorm.io/gorm"
 )
 
@@ -19,8 +19,8 @@ func NewUserRepo(db *gorm.DB) *UserRepo {
 	}
 }
 
-func (r *UserRepo) GetUserDataByPhoneNumber(ctx context.Context, phoneNumber string) (*entity.User, error) {
-	u := new(entity.User)
+func (r *UserRepo) GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (*user.User, error) {
+	u := new(model.User)
 	res := r.db.WithContext(ctx).
 		Preload("AuthData").
 		Preload("AuthData.Device").
@@ -28,24 +28,21 @@ func (r *UserRepo) GetUserDataByPhoneNumber(ctx context.Context, phoneNumber str
 		First(u)
 	if err := res.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, pkgerrors.ErrUserNotFound
+			return nil, user.ErrUserNotFound
 		}
 		return nil, err
 	}
-	return u, nil
-}
-
-func (r *UserRepo) GetDeviceById(ctx context.Context, deviceId string) (*entity.Device, error) {
-	device := new(entity.Device)
-	res := r.db.WithContext(ctx).
-		Preload("Blacklist").
-		Where(`"DEVICE_ID" = ?`, deviceId).
-		First(device)
-	if err := res.Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, pkgerrors.ErrDeviceNotFound
-		}
-		return nil, err
-	}
-	return device, nil
+	return &user.User{
+		ID:             u.ID,
+		AccountNumber:  u.AccountNumber,
+		FullName:       u.FullName,
+		Email:          u.Email,
+		PhoneNumber:    u.PhoneNumber,
+		IdentityNumber: u.IdentityNo,
+		Device: &user.Device{
+			FirebaseId:    u.AuthData.FirebaseId,
+			DeviceId:      u.AuthData.DeviceId,
+			IsBlacklisted: u.AuthData.Device.IsBlacklisted(),
+		},
+	}, nil
 }

@@ -11,7 +11,7 @@ import (
 )
 
 // New returns new postgres db connection.
-func New(cfg *config.Config) *gorm.DB {
+func New(cfg *config.Configs) *gorm.DB {
 	log := logger.New()
 	dbCh := make(chan *gorm.DB, 1)
 

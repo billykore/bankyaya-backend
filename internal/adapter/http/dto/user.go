@@ -1,7 +1,9 @@
 package dto
 
 import (
-	"go.bankyaya.org/app/backend/internal/core/entity"
+	"time"
+
+	"go.bankyaya.org/app/backend/internal/domain/user"
 )
 
 type LoginRequest struct {
@@ -11,25 +13,27 @@ type LoginRequest struct {
 	FirebaseId string `json:"firebaseId" validate:"required"`
 }
 
-func (r *LoginRequest) ToUser() *entity.User {
-	return &entity.User{
-		PhoneNumber: r.Phone,
-		AuthData: entity.AuthData{
-			Password:   r.Password,
-			DeviceId:   r.DeviceId,
-			FirebaseId: r.FirebaseId,
-		},
+func (r *LoginRequest) ToUser() *user.User {
+	return &user.User{
+		CIF:           "",
+		Password:      "",
+		AccountNumber: "",
+		FullName:      "",
+		Email:         "",
+		PhoneNumber:   r.Phone,
+		NIK:           "",
+		Device:        nil,
 	}
 }
 
 type LoginResponse struct {
-	Token       string `json:"token"`
-	ExpiredTime int64  `json:"expiredTime"`
+	Token     string    `json:"token"`
+	ExpiredAt time.Time `json:"expiredTime"`
 }
 
-func NewLoginResponse(token *entity.Token) *LoginResponse {
+func NewLoginResponse(token *user.Token) *LoginResponse {
 	return &LoginResponse{
-		Token:       token.AccessToken,
-		ExpiredTime: token.ExpiredTime,
+		Token:     token.AccessToken,
+		ExpiredAt: token.ExpiresAt,
 	}
 }

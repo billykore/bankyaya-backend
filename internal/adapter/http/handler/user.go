@@ -4,14 +4,14 @@ import (
 	"github.com/labstack/echo/v4"
 	"go.bankyaya.org/app/backend/internal/adapter/http/dto"
 	"go.bankyaya.org/app/backend/internal/adapter/http/response"
-	"go.bankyaya.org/app/backend/internal/core/service"
+	"go.bankyaya.org/app/backend/internal/domain/user"
 )
 
 type UserHandler struct {
-	svc *service.User
+	svc *user.Service
 }
 
-func NewUserHandler(svc *service.User) *UserHandler {
+func NewUserHandler(svc *user.Service) *UserHandler {
 	return &UserHandler{
 		svc: svc,
 	}
@@ -24,7 +24,7 @@ func NewUserHandler(svc *service.User) *UserHandler {
 //	@Tags			user
 //	@Accept			json
 //	@Produce		json
-//	@Param			LoginRequest	body		user.LoginRequest	true	"Login request"
+//	@Param			LoginRequest	body		dto.LoginRequest	true	"Login request"
 //	@Success		200				{object}	response.Response
 //	@Failure		400				{object}	response.Response
 //	@Failure		404				{object}	response.Response

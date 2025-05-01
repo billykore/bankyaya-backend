@@ -5,32 +5,45 @@ package config
 import (
 	"sync"
 
-	"github.com/kelseyhightower/envconfig"
-	internal2 "go.bankyaya.org/app/backend/internal/pkg/config/internal"
+	"github.com/spf13/viper"
+	"go.bankyaya.org/app/backend/internal/pkg/config/internal"
 )
 
-// Config holds the application configuration.
-type Config struct {
-	HTTP        internal2.HTTP
-	Token       internal2.Token
-	Postgres    internal2.Postgres
-	SQLite      internal2.SQLite
-	CoreBanking internal2.CoreBanking
-	Email       internal2.Email
-	QRIS        internal2.QRIS
-	Rabbit      internal2.Rabbit
+var _once sync.Once
+
+// Configs hold the application configurations.
+type Configs struct {
+	App         internal.App
+	Postgres    internal.Postgres
+	CoreBanking internal.CoreBanking
+	Email       internal.Email
+	Clients     internal.Clients
+	Token       internal.Token
 }
 
-var (
-	_cfg  *Config
-	_once sync.Once
-)
+type Config struct {
+	Name    string
+	Version string
+	Configs Configs
+}
 
-// Get initializes and returns the singleton Config instance.
-func Get() *Config {
+// Load loads application configuration from a YAML file using Viper.
+func Load() *Configs {
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+
+	if err := viper.ReadInConfig(); err != nil {
+		panic(err)
+	}
+
+	var cfg Config
 	_once.Do(func() {
-		_cfg = new(Config)
-		envconfig.MustProcess("", _cfg)
+		err := viper.Unmarshal(&cfg)
+		if err != nil {
+			panic(err)
+		}
 	})
-	return _cfg
+
+	return &cfg.Configs
 }

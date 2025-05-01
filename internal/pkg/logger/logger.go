@@ -12,7 +12,7 @@ import (
 // Logger provides logging functions.
 type Logger struct {
 	zapLogger *zap.Logger
-	service   string
+	domain    string
 	usecase   string
 }
 
@@ -37,8 +37,8 @@ func newLogger() *zap.Logger {
 	return logger
 }
 
-func (l *Logger) ServiceUsecase(service, usecase string) *Logger {
-	l.service = service
+func (l *Logger) DomainUsecase(domain, usecase string) *Logger {
+	l.domain = domain
 	l.usecase = usecase
 	return l
 }
@@ -47,7 +47,7 @@ func (l *Logger) ServiceUsecase(service, usecase string) *Logger {
 func (l *Logger) Error(err error) {
 	l.zapLogger.Error(
 		err.Error(),
-		zap.String("service", l.service),
+		zap.String("domain", l.domain),
 		zap.String("usecase", l.usecase),
 	)
 }
@@ -56,12 +56,12 @@ func (l *Logger) Error(err error) {
 func (l *Logger) Errorf(format string, a ...any) {
 	l.zapLogger.Error(
 		fmt.Sprintf(format, a...),
-		zap.String("service", l.service),
+		zap.String("domain", l.usecase),
 		zap.String("usecase", l.usecase),
 	)
 }
 
-// Fatal logs an error then shutdown the service.
+// Fatal logs an error then shutdown the domain.
 func (l *Logger) Fatal(err error) {
 	l.zapLogger.Fatal(
 		err.Error(),
@@ -81,7 +81,7 @@ func (l *Logger) Fatalf(format string, a ...any) {
 func (l *Logger) Info(v any) {
 	l.zapLogger.Info(
 		fmt.Sprintf("%v", v),
-		zap.String("service", l.service),
+		zap.String("domain", l.domain),
 		zap.String("usecase", l.usecase),
 	)
 }
@@ -90,7 +90,7 @@ func (l *Logger) Info(v any) {
 func (l *Logger) Infof(format string, a ...any) {
 	l.zapLogger.Info(
 		fmt.Sprintf(format, a...),
-		zap.String("service", l.service),
+		zap.String("domain", l.domain),
 		zap.String("usecase", l.usecase),
 	)
 }
