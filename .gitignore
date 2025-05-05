@@ -27,3 +27,5 @@ go.work.sum
 # Goland
 .idea
 .DS_Store
+
+config.yaml

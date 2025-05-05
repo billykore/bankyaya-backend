@@ -7,11 +7,13 @@ import (
 	"go.bankyaya.org/app/backend/internal/adapter/http/handler"
 	"go.bankyaya.org/app/backend/internal/adapter/http/server"
 	"go.bankyaya.org/app/backend/internal/adapter/notification"
+	"go.bankyaya.org/app/backend/internal/adapter/otp"
 	"go.bankyaya.org/app/backend/internal/adapter/password"
 	"go.bankyaya.org/app/backend/internal/adapter/sequence"
 	"go.bankyaya.org/app/backend/internal/adapter/storage/repo"
 	"go.bankyaya.org/app/backend/internal/adapter/token"
 	"go.bankyaya.org/app/backend/internal/domain/intrabank"
+	otpdomain "go.bankyaya.org/app/backend/internal/domain/otp"
 	"go.bankyaya.org/app/backend/internal/domain/user"
 )
 
@@ -28,6 +30,7 @@ var coreBankingProviderSet = wire.NewSet(
 
 var emailProviderSet = wire.NewSet(
 	email.NewTransferEmail, wire.Bind(new(intrabank.ReceiptMailer), new(*email.IntrabankEmail)),
+	email.NewOTPEmail, wire.Bind(new(otpdomain.Sender), new(*email.OTPEmail)),
 )
 
 var notificationProviderSet = wire.NewSet(
@@ -38,14 +41,20 @@ var sequencerProviderSet = wire.NewSet(
 	sequence.New, wire.Bind(new(intrabank.SequenceGenerator), new(*sequence.UUID)),
 )
 
+var otpProviderSet = wire.NewSet(
+	otp.NewOTP, wire.Bind(new(otpdomain.Generator), new(*otp.OTP)),
+)
+
 var repositoryProviderSet = wire.NewSet(
 	repo.NewIntrabankRepo, wire.Bind(new(intrabank.Repository), new(*repo.IntrabankRepo)),
 	repo.NewUserRepo, wire.Bind(new(user.Repository), new(*repo.UserRepo)),
+	repo.NewOTPRepo, wire.Bind(new(otpdomain.Repository), new(*repo.OTPRepo)),
 )
 
 var handlerProviderSet = wire.NewSet(
 	handler.NewIntrabankHandler,
 	handler.NewUserHandler,
+	handler.NewOTPHandler,
 )
 
 var serverProviderSet = wire.NewSet(
@@ -60,6 +69,7 @@ var ProviderSet = wire.NewSet(
 	emailProviderSet,
 	notificationProviderSet,
 	sequencerProviderSet,
+	otpProviderSet,
 	repositoryProviderSet,
 	handlerProviderSet,
 	serverProviderSet,

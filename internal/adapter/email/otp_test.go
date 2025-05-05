@@ -7,27 +7,21 @@ import (
 	"go.bankyaya.org/app/backend/internal/pkg/constant"
 )
 
-func TestParseIntrabankTemplate(t *testing.T) {
-	tmpl, err := parseIntrabankTemplate(map[string]any{
-		"CompanyName":        constant.BankYayaCompanyName,
-		"SourceName":         "Oyen",
-		"SourceAccount":      "12345",
-		"DestinationName":    "Chiko",
-		"DestinationAccount": "54321",
-		"DestinationBank":    constant.BankYayaCompanyName,
-		"Amount":             50000,
-		"Fee":                0,
-		"TransactionRef":     "trf-00001",
-		"Note":               "test",
+func TestParseOTPTemplate(t *testing.T) {
+	tmpl, err := parseOTPTemplate(map[string]any{
+		"CompanyName": constant.BankYayaCompanyName,
+		"Name":        "Oyen",
+		"Purpose":     "login",
+		"Code":        "123456",
 	})
 	assert.NoError(t, err)
 	assert.NotEmpty(t, tmpl)
 
-	receiptHtml := []byte(`<!DOCTYPE html>
+	var otpHtml = []byte(`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>This is your transfer receipt</title>
+  <title>This is your OTP for login</title>
 </head>
 <body style="max-width: 1024px;margin: 0 auto">
 <div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
@@ -38,15 +32,8 @@ func TestParseIntrabankTemplate(t *testing.T) {
       </a>
     </div>
     <p style="font-size:1.1em">Hi, Oyen!</p>
-    <p>This is your transfer receipt</p>
-    <p>Source Account: 12345</p>
-    <p>To: Chiko</p>
-    <p>Destination Account: 54321</p>
-    <p>Destination Bank: PT. Bank Yaya Sumber Uang Tiada Tara (Persero)</p>
-    <p>Amount: 50000</p>
-    <p>Fee: 0</p>
-    <p>Transaction ID: trf-00001</p>
-    <p>Note: test</p>
+    <p>This is your OTP for login</p>
+    <h1>123456</h1>
     <p style="font-size:0.9em;">Regards,<br/>PT. Bank Yaya Sumber Uang Tiada Tara (Persero)</p>
     <hr style="border:none;border-top:1px solid #eee"/>
     <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
@@ -59,5 +46,5 @@ func TestParseIntrabankTemplate(t *testing.T) {
 </body>
 </html>`)
 
-	assert.Equal(t, receiptHtml, tmpl)
+	assert.Equal(t, otpHtml, tmpl)
 }

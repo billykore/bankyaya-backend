@@ -22,10 +22,10 @@ func TestTransferInquirySuccess(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -95,10 +95,10 @@ func TestTransferInquiryFailed_CheckEODFailed(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -129,10 +129,10 @@ func TestTransferInquiryFailed_EODIsRunning(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -166,10 +166,10 @@ func TestTransferInquiryFailed_GetTransactionLimitFailed(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -207,10 +207,10 @@ func TestTransferInquiryFailed_TransactionLimitCannotTransfer(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -252,10 +252,10 @@ func TestTransferInquiryFailed_FailedCheckSourceAccount(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -299,10 +299,10 @@ func TestTransferInquiryFailed_SourceAccountIsInactive(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -348,10 +348,10 @@ func TestTransferInquiryFailed_CheckDestinationAccountFailed(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -400,10 +400,10 @@ func TestTransferInquiryFailed_DestinationAccountInactive(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -454,10 +454,10 @@ func TestTransferInquiryFailed_GenerateSequenceFailed(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -512,10 +512,10 @@ func TestTransferInquiryFailed_InsertSequenceFailed(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -578,10 +578,10 @@ func TestTransferDoPaymentSuccess(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -668,10 +668,10 @@ func TestTransferDoPaymentFailed_CheckEODFailed(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -698,10 +698,10 @@ func TestTransferDoPaymentFailed_EODIsRunning(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -732,10 +732,10 @@ func TestTransferDoPaymentFailed_GetSequenceFailed(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -768,10 +768,10 @@ func TestTransferDoPaymentFailed_InvalidSequenceNumber(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -811,10 +811,10 @@ func TestTransferDoPaymentFailed_GetTransactionLimitFailed(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -856,10 +856,10 @@ func TestTransferDoPaymentFailed_TransactionLimitCannotTransfer(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -905,10 +905,10 @@ func TestTransferDoPaymentFailed_PerformOverbookingFailed(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -1000,7 +1000,7 @@ func TestTransferDoPaymentFailed_GetUserFromContextFailed(t *testing.T) {
 	transaction, err := svc.DoPayment(ctx, "123456")
 
 	assert.Nil(t, transaction)
-	assert.Equal(t, status.Error(codes.Unauthenticated, ErrUserUnauthenticated), err)
+	assert.Equal(t, status.Error(codes.Unauthenticated, ErrUnauthenticatedUser), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -1017,10 +1017,10 @@ func TestTransferDoPaymentFailed_InsertTransactionFailed(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -1090,10 +1090,10 @@ func TestTransferDoPaymentFailed_SendEmailFailed(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 
@@ -1166,10 +1166,10 @@ func TestTransferDoPaymentFailed_NotifyFailed(t *testing.T) {
 		notifierMock    = NewMockNotifier(t)
 		svc             = NewService(logger.New(), repoMock, corebankingMock, seqGenMock, mailerMock, notifierMock)
 		ctx             = ctxt.ContextWithUser(context.Background(), &ctxt.User{
-			Id:       123,
-			CIF:      "1234567",
-			FullName: "Olivia Rodrigo",
-			Email:    "olivia@gmail.com",
+			ID:    123,
+			CIF:   "1234567",
+			Name:  "Olivia Rodrigo",
+			Email: "olivia@gmail.com",
 		})
 	)
 

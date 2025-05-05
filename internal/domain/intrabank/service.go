@@ -152,13 +152,13 @@ func (s *Service) DoPayment(ctx context.Context, sequenceNumber string) (*Transa
 	user, ok := ctxt.UserFromContext(ctx)
 	if !ok {
 		s.log.DomainUsecase(domainName, "DoPayment").Errorf("GetUserFromContext: %v", ctxt.ErrUserFromContext)
-		return nil, status.Error(codes.Unauthenticated, ErrUserUnauthenticated)
+		return nil, status.Error(codes.Unauthenticated, ErrUnauthenticatedUser)
 	}
 
 	transaction := &Transaction{
 		SequenceNumber:       sequence.SequenceNumber,
 		SequenceJournal:      result.JournalSequence,
-		UserID:               strconv.Itoa(user.Id),
+		UserID:               strconv.Itoa(user.ID),
 		Destination:          sequence.DestinationAccount,
 		Amount:               sequence.Amount,
 		TransactionType:      transferType,
@@ -179,11 +179,11 @@ func (s *Service) DoPayment(ctx context.Context, sequenceNumber string) (*Transa
 		Recipient:          user.Email,
 		Amount:             sequence.Amount,
 		Fee:                transferFee,
-		SourceName:         user.FullName,
+		SourceName:         user.Name,
 		SourceAccount:      sequence.SourceAccount,
 		DestinationName:    sequence.DestinationName,
 		DestinationAccount: sequence.DestinationAccount,
-		DestinationBank:    constant.CompanyName,
+		DestinationBank:    constant.BankYayaCompanyName,
 		TransactionRef:     result.TransactionReference,
 		Note:               sequence.Remark(),
 	})

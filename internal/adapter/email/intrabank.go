@@ -61,7 +61,7 @@ func NewTransferEmail(log *logger.Logger, client *mailtrap.Client) *IntrabankEma
 
 func (e *IntrabankEmail) SendReceipt(_ context.Context, data *intrabank.EmailData) error {
 	body, err := parseIntrabankTemplate(map[string]any{
-		"CompanyName":        constant.CompanyName,
+		"CompanyName":        constant.BankYayaCompanyName,
 		"SourceName":         data.SourceName,
 		"SourceAccount":      data.SourceAccount,
 		"DestinationName":    data.DestinationName,

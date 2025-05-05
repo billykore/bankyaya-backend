@@ -21,8 +21,8 @@ var (
 	// ErrInvalidSequenceNumber indicates that the sequence number is invalid.
 	ErrInvalidSequenceNumber = errors.New("invalid sequence number")
 
-	// ErrUserUnauthenticated indicates that the user is not authenticated.
-	ErrUserUnauthenticated = errors.New("user is unauthenticated")
+	// ErrUnauthenticatedUser indicates that the user is not authenticated.
+	ErrUnauthenticatedUser = errors.New("unauthenticated user")
 
 	// ErrFailedParseMoney is returned when the system fails to parse a money value
 	// from a string or an unsupported format.
@@ -33,7 +33,4 @@ var (
 
 	// ErrNotifyFailed is returned when the notification fails to send.
 	ErrNotifyFailed = errors.New("notify failed")
-
-	// ErrAccountNotFound is returned when the account is not found.
-	ErrAccountNotFound = errors.New("account not found")
 )

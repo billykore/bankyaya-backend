@@ -56,14 +56,14 @@ func userFromToken(token *jwt.Token) ctxt.User {
 		return ctxt.User{}
 	}
 	return ctxt.User{
-		CIF:      cif,
-		Id:       userId,
-		FullName: fullName,
-		Email:    email,
+		CIF:   cif,
+		ID:    userId,
+		Name:  fullName,
+		Email: email,
 	}
 }
 
-// errorHandler returns unauthorized response if there is an authentication error.
+// errorHandler returns an unauthorized response if there is an authentication error.
 func errorHandler(ctx echo.Context, err error) error {
 	return ctx.JSON(response.Unauthorized(err))
 }

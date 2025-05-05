@@ -10,10 +10,11 @@ var ErrUserFromContext = errors.New("failed to get user from context")
 const UserContextKey = "user"
 
 type User struct {
-	Id       int
-	CIF      string
-	FullName string
-	Email    string
+	ID    int
+	CIF   string
+	Name  string
+	Email string
+	Phone string
 }
 
 // ContextWithUser set user data to the ctx context.

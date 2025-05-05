@@ -24,14 +24,6 @@ func Success(data any) (int, *Response) {
 	}
 }
 
-// SuccessWithoutData returns status code 200 and success response without data.
-func SuccessWithoutData() (int, *Response) {
-	return http.StatusOK, &Response{
-		Status:     "OK",
-		ServerTime: currentServerTime(),
-	}
-}
-
 // Error returns error status code and error.
 func Error(err error) (int, *Response) {
 	var s *status.Status

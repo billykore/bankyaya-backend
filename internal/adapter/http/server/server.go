@@ -34,6 +34,7 @@ type Router struct {
 	router           *echo.Echo
 	intrabankHandler *handler.Intrabank
 	userHandler      *handler.UserHandler
+	otpHandler       *handler.OTPHandler
 }
 
 // NewRouter returns new Router.
@@ -43,6 +44,7 @@ func NewRouter(
 	router *echo.Echo,
 	transferHandler *handler.Intrabank,
 	userHandler *handler.UserHandler,
+	otpHandler *handler.OTPHandler,
 ) *Router {
 	return &Router{
 		cfg:              cfg,
@@ -50,6 +52,7 @@ func NewRouter(
 		router:           router,
 		intrabankHandler: transferHandler,
 		userHandler:      userHandler,
+		otpHandler:       otpHandler,
 	}
 }
 
@@ -89,4 +92,10 @@ func (r *Router) setTransferRoutes() {
 
 func (r *Router) setUserRoutes() {
 	r.router.POST("/user/login", r.userHandler.Login)
+}
+
+func (r *Router) setOTPRoutes() {
+	or := r.router.Group("/otp")
+	or.POST("/send", r.otpHandler.SendOTP)
+	or.POST("/verify", r.otpHandler.VerifyOTP)
 }

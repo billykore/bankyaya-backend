@@ -13,11 +13,13 @@ import (
 	"go.bankyaya.org/app/backend/internal/adapter/http/handler"
 	"go.bankyaya.org/app/backend/internal/adapter/http/server"
 	"go.bankyaya.org/app/backend/internal/adapter/notification"
+	"go.bankyaya.org/app/backend/internal/adapter/otp"
 	"go.bankyaya.org/app/backend/internal/adapter/password"
 	"go.bankyaya.org/app/backend/internal/adapter/sequence"
 	"go.bankyaya.org/app/backend/internal/adapter/storage/repo"
 	"go.bankyaya.org/app/backend/internal/adapter/token"
 	"go.bankyaya.org/app/backend/internal/domain/intrabank"
+	otp2 "go.bankyaya.org/app/backend/internal/domain/otp"
 	"go.bankyaya.org/app/backend/internal/domain/user"
 	"go.bankyaya.org/app/backend/internal/pkg/config"
 	"go.bankyaya.org/app/backend/internal/pkg/corebanking"
@@ -26,6 +28,7 @@ import (
 	"go.bankyaya.org/app/backend/internal/pkg/httpclient"
 	"go.bankyaya.org/app/backend/internal/pkg/logger"
 	"go.bankyaya.org/app/backend/internal/pkg/notification/firebase"
+	"go.bankyaya.org/app/backend/internal/pkg/validation"
 )
 
 import (
@@ -55,7 +58,13 @@ func initApp(cfg *config.Configs) *app {
 	jwt := token.NewJWT(cfg)
 	userService := user.NewService(loggerLogger, userRepo, bcryptHasher, jwt)
 	userHandler := handler.NewUserHandler(userService)
-	router := server.NewRouter(cfg, loggerLogger, echoEcho, handlerIntrabank, userHandler)
+	validator := validation.New()
+	otpRepo := repo.NewOTPRepo(db)
+	otpOTP := otp.NewOTP()
+	otpEmail := email.NewOTPEmail(loggerLogger, mailtrapClient)
+	otpService := otp2.NewService(loggerLogger, otpRepo, otpOTP, otpEmail)
+	otpHandler := handler.NewOTPHandler(validator, otpService)
+	router := server.NewRouter(cfg, loggerLogger, echoEcho, handlerIntrabank, userHandler, otpHandler)
 	serverServer := server.New(router)
 	mainApp := newApp(serverServer)
 	return mainApp
