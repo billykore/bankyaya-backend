@@ -36,7 +36,7 @@ func (m Money) Rupiah() string {
 }
 
 func ParseMoney(s string) (Money, error) {
-	i, err := strconv.ParseUint(s, 10, 64)
+	i, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
 		return 0, ErrFailedParseMoney
 	}
@@ -209,7 +209,7 @@ type EmailData struct {
 
 // Notification represents a transaction-related notification.
 type Notification struct {
-	FirebaseId  string
+	FirebaseID  string
 	Subject     string
 	Amount      Money
 	Destination string

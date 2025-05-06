@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"go.bankyaya.org/app/backend/internal/pkg/status"
+	"go.bankyaya.org/app/backend/internal/pkg/pkgerror"
 )
 
 type Response struct {
@@ -26,7 +26,7 @@ func Success(data any) (int, *Response) {
 
 // Error returns error status code and error.
 func Error(err error) (int, *Response) {
-	var s *status.Status
+	var s *pkgerror.Error
 	if errors.As(err, &s) {
 		return responseCode[s.Code], &Response{
 			Status:     responseStatus[s.Code],

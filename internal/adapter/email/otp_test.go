@@ -17,7 +17,7 @@ func TestParseOTPTemplate(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, tmpl)
 
-	var otpHtml = []byte(`<!DOCTYPE html>
+	var otpHTML = []byte(`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -46,5 +46,5 @@ func TestParseOTPTemplate(t *testing.T) {
 </body>
 </html>`)
 
-	assert.Equal(t, otpHtml, tmpl)
+	assert.Equal(t, otpHTML, tmpl)
 }

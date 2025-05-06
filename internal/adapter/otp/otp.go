@@ -1,8 +1,9 @@
 package otp
 
 import (
+	"crypto/rand"
 	"errors"
-	"math/rand"
+	"math/big"
 )
 
 const digits = "0123456789"
@@ -20,7 +21,11 @@ func (o *OTP) Generate(length int) (string, error) {
 	}
 	otp := make([]byte, length)
 	for i := range otp {
-		otp[i] = digits[rand.Intn(len(digits))]
+		n, err := rand.Int(rand.Reader, big.NewInt(int64(len(digits))))
+		if err != nil {
+			return "", err
+		}
+		otp[i] = digits[n.Int64()]
 	}
 	return string(otp), nil
 }

@@ -3,7 +3,6 @@
 package otp
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -22,7 +21,7 @@ func NewPurpose(purpose string) Purpose {
 
 // Message returns a formatted OTP message based on the Purpose value.
 func (p Purpose) Message() string {
-	return fmt.Sprintf("This is your OTP for %s", string(p))
+	return "This is your OTP for " + string(p)
 }
 
 // String converts the Purpose value to its string representation.
@@ -49,7 +48,7 @@ func (c Channel) String() string {
 
 // OTP represents a one-time password used for authentication or verification.
 type OTP struct {
-	ID         int64
+	ID         uint64
 	Code       string
 	Purpose    Purpose
 	Channel    Channel

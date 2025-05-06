@@ -19,7 +19,7 @@ func NewIntrabankNotification(firebaseClient *firebase.Client) *IntrabankNotific
 
 func (n *IntrabankNotification) Notify(ctx context.Context, notification *intrabank.Notification) error {
 	err := n.firebase.Send(ctx, &firebase.Message{
-		FirebaseId: notification.FirebaseId,
+		FirebaseID: notification.FirebaseID,
 		Title:      notification.Subject,
 		Body:       notification.String(),
 	})

@@ -7,7 +7,7 @@ import (
 	"go.bankyaya.org/app/backend/internal/pkg/codes"
 	"go.bankyaya.org/app/backend/internal/pkg/ctxt"
 	"go.bankyaya.org/app/backend/internal/pkg/logger"
-	"go.bankyaya.org/app/backend/internal/pkg/status"
+	"go.bankyaya.org/app/backend/internal/pkg/pkgerror"
 )
 
 const (
@@ -41,13 +41,13 @@ func (s *Service) Send(ctx context.Context, purpose Purpose, channel Channel) (*
 	user, ok := ctxt.UserFromContext(ctx)
 	if !ok {
 		s.log.DomainUsecase(domainName, "Send").Error(ctxt.ErrUserFromContext)
-		return nil, status.Error(codes.Unauthenticated, ErrUnauthenticatedUser)
+		return nil, pkgerror.New(codes.Unauthenticated, ErrUnauthenticatedUser)
 	}
 
 	code, err := s.generator.Generate(otpLength)
 	if err != nil {
 		s.log.DomainUsecase(domainName, "Send").Error(err)
-		return nil, status.Error(codes.Internal, ErrGeneral)
+		return nil, pkgerror.New(codes.Internal, ErrGeneral)
 	}
 
 	createdAt := time.Now()
@@ -70,13 +70,13 @@ func (s *Service) Send(ctx context.Context, purpose Purpose, channel Channel) (*
 	err = s.sender.Send(ctx, otp)
 	if err != nil {
 		s.log.DomainUsecase(domainName, "Send").Error(err)
-		return nil, status.Error(codes.Internal, ErrGeneral)
+		return nil, pkgerror.New(codes.Internal, ErrGeneral)
 	}
 
 	err = s.repo.Save(ctx, otp)
 	if err != nil {
 		s.log.DomainUsecase(domainName, "Send").Error(err)
-		return nil, status.Error(codes.Internal, ErrGeneral)
+		return nil, pkgerror.New(codes.Internal, ErrGeneral)
 	}
 
 	return otp, nil
@@ -86,7 +86,7 @@ func (s *Service) Verify(ctx context.Context, in *OTP) error {
 	user, ok := ctxt.UserFromContext(ctx)
 	if !ok {
 		s.log.DomainUsecase(domainName, "Verify").Error(ctxt.ErrUserFromContext)
-		return status.Error(codes.Unauthenticated, ErrUnauthenticatedUser)
+		return pkgerror.New(codes.Unauthenticated, ErrUnauthenticatedUser)
 	}
 
 	in.User = NewUser(user.ID, user.Name, user.Email, user.Phone)
@@ -94,19 +94,19 @@ func (s *Service) Verify(ctx context.Context, in *OTP) error {
 	otp, err := s.repo.Get(ctx, in.ID)
 	if err != nil {
 		s.log.DomainUsecase(domainName, "Verify").Error(err)
-		return status.Error(codes.Internal, ErrGeneral)
+		return pkgerror.New(codes.Internal, ErrGeneral)
 	}
 	if !otp.Equal(in) {
 		s.log.DomainUsecase(domainName, "Verify").Error(ErrInvalidOTP)
-		return status.Error(codes.BadRequest, ErrInvalidOTP)
+		return pkgerror.New(codes.BadRequest, ErrInvalidOTP)
 	}
 	if otp.IsVerified() {
 		s.log.DomainUsecase(domainName, "Verify").Error(ErrOTPAlreadyUsed)
-		return status.Error(codes.BadRequest, ErrOTPAlreadyUsed)
+		return pkgerror.New(codes.BadRequest, ErrOTPAlreadyUsed)
 	}
 	if otp.IsExpired(time.Now()) {
 		s.log.DomainUsecase(domainName, "Verify").Error(ErrOTPExpired)
-		return status.Error(codes.BadRequest, ErrOTPExpired)
+		return pkgerror.New(codes.BadRequest, ErrOTPExpired)
 	}
 
 	otp.VerifiedAt = time.Now()
@@ -114,7 +114,7 @@ func (s *Service) Verify(ctx context.Context, in *OTP) error {
 	err = s.repo.Update(ctx, otp)
 	if err != nil {
 		s.log.DomainUsecase(domainName, "Verify").Error(err)
-		return status.Error(codes.Internal, ErrGeneral)
+		return pkgerror.New(codes.Internal, ErrGeneral)
 	}
 
 	return nil

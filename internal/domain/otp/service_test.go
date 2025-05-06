@@ -11,7 +11,7 @@ import (
 	"go.bankyaya.org/app/backend/internal/pkg/codes"
 	"go.bankyaya.org/app/backend/internal/pkg/ctxt"
 	"go.bankyaya.org/app/backend/internal/pkg/logger"
-	"go.bankyaya.org/app/backend/internal/pkg/status"
+	"go.bankyaya.org/app/backend/internal/pkg/pkgerror"
 )
 
 func TestSendSuccess(t *testing.T) {
@@ -62,7 +62,7 @@ func TestSend_GetUserFromContextFailed(t *testing.T) {
 	res, err := svc.Send(ctx, PurposeLogin, ChannelEmail)
 
 	assert.Nil(t, res)
-	assert.Equal(t, status.Error(codes.Unauthenticated, ErrUnauthenticatedUser), err)
+	assert.Equal(t, pkgerror.New(codes.Unauthenticated, ErrUnauthenticatedUser), err)
 
 	generatorMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -90,7 +90,7 @@ func TestSend_GenerateOTPFailed(t *testing.T) {
 	res, err := svc.Send(ctx, PurposeLogin, ChannelEmail)
 
 	assert.Nil(t, res)
-	assert.Equal(t, status.Error(codes.Internal, ErrGeneral), err)
+	assert.Equal(t, pkgerror.New(codes.Internal, ErrGeneral), err)
 
 	generatorMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)

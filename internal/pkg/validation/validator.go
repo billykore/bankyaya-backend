@@ -46,7 +46,7 @@ func joinValidationErrors(validationErrors validator.ValidationErrors) error {
 	for _, fieldError := range validationErrors {
 		errList = append(errList, errMessage(fieldError))
 	}
-	return fmt.Errorf(strings.Join(errList, ". "))
+	return errors.New(strings.Join(errList, ". "))
 }
 
 // tagMessages maps validation tags to corresponding error message templates.

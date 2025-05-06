@@ -11,13 +11,13 @@ import (
 
 // jwtConfig contains configuration for JWT auth middleware.
 var jwtConfig = echojwt.Config{
-	ContextKey:     ctxt.UserContextKey,
+	ContextKey:     ctxt.UserContextKey.String(),
 	SigningKey:     []byte(config.Load().Token.Secret),
 	SuccessHandler: successHandler,
 	ErrorHandler:   errorHandler,
 }
 
-// AuthenticateUser returns middleware function that validates token from headers
+// AuthenticateUser returns a middleware function that validates token from headers
 // and extract user information.
 func AuthenticateUser() echo.MiddlewareFunc {
 	return echojwt.WithConfig(jwtConfig)
@@ -26,7 +26,7 @@ func AuthenticateUser() echo.MiddlewareFunc {
 // successHandler extract user information from token
 // and save the information in the request context.
 func successHandler(ctx echo.Context) {
-	t := ctx.Get(ctxt.UserContextKey).(*jwt.Token)
+	t := ctx.Get(ctxt.UserContextKey.String()).(*jwt.Token)
 	user := userFromToken(t)
 	c := ctx.Request().Context()
 	c = ctxt.ContextWithUser(c, &user)
@@ -43,7 +43,7 @@ func userFromToken(token *jwt.Token) ctxt.User {
 	if !ok {
 		return ctxt.User{}
 	}
-	userId, ok := claims["userId"].(int)
+	userID, ok := claims["userID"].(int)
 	if !ok {
 		return ctxt.User{}
 	}
@@ -57,7 +57,7 @@ func userFromToken(token *jwt.Token) ctxt.User {
 	}
 	return ctxt.User{
 		CIF:   cif,
-		ID:    userId,
+		ID:    userID,
 		Name:  fullName,
 		Email: email,
 	}

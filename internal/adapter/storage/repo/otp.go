@@ -31,7 +31,7 @@ func (o *OTPRepo) Save(ctx context.Context, otp *otp.OTP) error {
 	return res.Error
 }
 
-func (o *OTPRepo) Get(ctx context.Context, id int64) (*otp.OTP, error) {
+func (o *OTPRepo) Get(ctx context.Context, id uint64) (*otp.OTP, error) {
 	m := new(model.OTP)
 	res := o.db.WithContext(ctx).
 		Preload("User").
@@ -41,7 +41,7 @@ func (o *OTPRepo) Get(ctx context.Context, id int64) (*otp.OTP, error) {
 		return nil, err
 	}
 	return &otp.OTP{
-		ID:      int64(m.ID),
+		ID:      uint64(m.ID),
 		Code:    m.Code,
 		Purpose: otp.NewPurpose(m.Purpose),
 		Channel: otp.NewChannel(m.Channel),

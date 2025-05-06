@@ -10,7 +10,7 @@ import (
 	"go.bankyaya.org/app/backend/internal/pkg/codes"
 	"go.bankyaya.org/app/backend/internal/pkg/ctxt"
 	"go.bankyaya.org/app/backend/internal/pkg/logger"
-	"go.bankyaya.org/app/backend/internal/pkg/status"
+	"go.bankyaya.org/app/backend/internal/pkg/pkgerror"
 )
 
 func TestTransferInquirySuccess(t *testing.T) {
@@ -112,7 +112,7 @@ func TestTransferInquiryFailed_CheckEODFailed(t *testing.T) {
 		DestinationAccount: "001001234567892",
 	})
 	assert.Nil(t, sequence)
-	assert.Equal(t, status.Error(codes.Internal, ErrGeneral), err)
+	assert.Equal(t, pkgerror.New(codes.Internal, ErrGeneral), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -149,7 +149,7 @@ func TestTransferInquiryFailed_EODIsRunning(t *testing.T) {
 		DestinationAccount: "001001234567892",
 	})
 	assert.Nil(t, sequence)
-	assert.Equal(t, status.Error(codes.Internal, ErrEODInProgress), err)
+	assert.Equal(t, pkgerror.New(codes.Internal, ErrEODInProgress), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -190,7 +190,7 @@ func TestTransferInquiryFailed_GetTransactionLimitFailed(t *testing.T) {
 	})
 
 	assert.Nil(t, sequence)
-	assert.Equal(t, status.Error(codes.Internal, ErrGeneral), err)
+	assert.Equal(t, pkgerror.New(codes.Internal, ErrGeneral), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -235,7 +235,7 @@ func TestTransferInquiryFailed_TransactionLimitCannotTransfer(t *testing.T) {
 	})
 
 	assert.Nil(t, sequence)
-	assert.Equal(t, status.Error(codes.BadRequest, ErrInvalidAmount), err)
+	assert.Equal(t, pkgerror.New(codes.BadRequest, ErrInvalidAmount), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -282,7 +282,7 @@ func TestTransferInquiryFailed_FailedCheckSourceAccount(t *testing.T) {
 	})
 
 	assert.Nil(t, sequence)
-	assert.Equal(t, status.Error(codes.Internal, ErrGeneral), err)
+	assert.Equal(t, pkgerror.New(codes.Internal, ErrGeneral), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -331,7 +331,7 @@ func TestTransferInquiryFailed_SourceAccountIsInactive(t *testing.T) {
 	})
 
 	assert.Nil(t, sequence)
-	assert.Equal(t, status.Error(codes.BadRequest, ErrSourceAccountInactive), err)
+	assert.Equal(t, pkgerror.New(codes.BadRequest, ErrSourceAccountInactive), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -383,7 +383,7 @@ func TestTransferInquiryFailed_CheckDestinationAccountFailed(t *testing.T) {
 	})
 
 	assert.Nil(t, sequence)
-	assert.Equal(t, status.Error(codes.Internal, ErrGeneral), err)
+	assert.Equal(t, pkgerror.New(codes.Internal, ErrGeneral), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -437,7 +437,7 @@ func TestTransferInquiryFailed_DestinationAccountInactive(t *testing.T) {
 	})
 
 	assert.Nil(t, sequence)
-	assert.Equal(t, status.Error(codes.BadRequest, ErrDestinationAccountInactive), err)
+	assert.Equal(t, pkgerror.New(codes.BadRequest, ErrDestinationAccountInactive), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -495,7 +495,7 @@ func TestTransferInquiryFailed_GenerateSequenceFailed(t *testing.T) {
 	})
 
 	assert.Nil(t, sequence)
-	assert.Equal(t, status.Error(codes.Internal, ErrGeneral), err)
+	assert.Equal(t, pkgerror.New(codes.Internal, ErrGeneral), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -561,7 +561,7 @@ func TestTransferInquiryFailed_InsertSequenceFailed(t *testing.T) {
 	})
 
 	assert.Nil(t, sequence)
-	assert.Equal(t, status.Error(codes.Internal, ErrGeneral), err)
+	assert.Equal(t, pkgerror.New(codes.Internal, ErrGeneral), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -681,7 +681,7 @@ func TestTransferDoPaymentFailed_CheckEODFailed(t *testing.T) {
 	transaction, err := svc.DoPayment(ctx, "123456")
 
 	assert.Nil(t, transaction)
-	assert.Equal(t, status.Error(codes.Internal, ErrGeneral), err)
+	assert.Equal(t, pkgerror.New(codes.Internal, ErrGeneral), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -715,7 +715,7 @@ func TestTransferDoPaymentFailed_EODIsRunning(t *testing.T) {
 	transaction, err := svc.DoPayment(ctx, "123456")
 
 	assert.Nil(t, transaction)
-	assert.Equal(t, status.Error(codes.Internal, ErrEODInProgress), err)
+	assert.Equal(t, pkgerror.New(codes.Internal, ErrEODInProgress), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -751,7 +751,7 @@ func TestTransferDoPaymentFailed_GetSequenceFailed(t *testing.T) {
 	transaction, err := svc.DoPayment(ctx, "123456")
 
 	assert.Nil(t, transaction)
-	assert.Equal(t, status.Error(codes.Internal, ErrGeneral), err)
+	assert.Equal(t, pkgerror.New(codes.Internal, ErrGeneral), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -794,7 +794,7 @@ func TestTransferDoPaymentFailed_InvalidSequenceNumber(t *testing.T) {
 	transaction, err := svc.DoPayment(ctx, "123456")
 
 	assert.Nil(t, transaction)
-	assert.Equal(t, status.Error(codes.BadRequest, ErrInvalidSequenceNumber), err)
+	assert.Equal(t, pkgerror.New(codes.BadRequest, ErrInvalidSequenceNumber), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -839,7 +839,7 @@ func TestTransferDoPaymentFailed_GetTransactionLimitFailed(t *testing.T) {
 	transaction, err := svc.DoPayment(ctx, "123456")
 
 	assert.Nil(t, transaction)
-	assert.Equal(t, status.Error(codes.Internal, ErrGeneral), err)
+	assert.Equal(t, pkgerror.New(codes.Internal, ErrGeneral), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -888,7 +888,7 @@ func TestTransferDoPaymentFailed_TransactionLimitCannotTransfer(t *testing.T) {
 	transaction, err := svc.DoPayment(ctx, "123456")
 
 	assert.Nil(t, transaction)
-	assert.Equal(t, status.Error(codes.BadRequest, ErrInvalidAmount), err)
+	assert.Equal(t, pkgerror.New(codes.BadRequest, ErrInvalidAmount), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -945,7 +945,7 @@ func TestTransferDoPaymentFailed_PerformOverbookingFailed(t *testing.T) {
 	transaction, err := svc.DoPayment(ctx, "123456")
 
 	assert.Nil(t, transaction)
-	assert.Equal(t, status.Error(codes.Internal, ErrGeneral), err)
+	assert.Equal(t, pkgerror.New(codes.Internal, ErrGeneral), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -1000,7 +1000,7 @@ func TestTransferDoPaymentFailed_GetUserFromContextFailed(t *testing.T) {
 	transaction, err := svc.DoPayment(ctx, "123456")
 
 	assert.Nil(t, transaction)
-	assert.Equal(t, status.Error(codes.Unauthenticated, ErrUnauthenticatedUser), err)
+	assert.Equal(t, pkgerror.New(codes.Unauthenticated, ErrUnauthenticatedUser), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -1073,7 +1073,7 @@ func TestTransferDoPaymentFailed_InsertTransactionFailed(t *testing.T) {
 	transaction, err := svc.DoPayment(ctx, "123456")
 
 	assert.Nil(t, transaction)
-	assert.Equal(t, status.Error(codes.Internal, ErrGeneral), err)
+	assert.Equal(t, pkgerror.New(codes.Internal, ErrGeneral), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -1149,7 +1149,7 @@ func TestTransferDoPaymentFailed_SendEmailFailed(t *testing.T) {
 	transaction, err := svc.DoPayment(ctx, "123456")
 
 	assert.Nil(t, transaction)
-	assert.Equal(t, status.Error(codes.Internal, ErrSendEmailFailed), err)
+	assert.Equal(t, pkgerror.New(codes.Internal, ErrSendEmailFailed), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)
@@ -1228,7 +1228,7 @@ func TestTransferDoPaymentFailed_NotifyFailed(t *testing.T) {
 	transaction, err := svc.DoPayment(ctx, "123456")
 
 	assert.Nil(t, transaction)
-	assert.Equal(t, status.Error(codes.Internal, ErrNotifyFailed), err)
+	assert.Equal(t, pkgerror.New(codes.Internal, ErrNotifyFailed), err)
 
 	corebankingMock.AssertExpectations(t)
 	repoMock.AssertExpectations(t)

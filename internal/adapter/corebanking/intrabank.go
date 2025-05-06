@@ -27,7 +27,7 @@ func (cb *IntrabankCoreBanking) GetCoreStatus(ctx context.Context) (*intrabank.C
 		return nil, fmt.Errorf("failed to check EOD: %w", err)
 	}
 	if eod.Code != "00" {
-		return nil, fmt.Errorf("core banking: %v (%v)", eod.Description, eod.Code)
+		return nil, fmt.Errorf("core banking: %s (%s)", eod.Description, eod.Code)
 	}
 	return &intrabank.CoreStatus{
 		SystemDate:    eod.Data.SystemDate,
@@ -42,7 +42,7 @@ func (cb *IntrabankCoreBanking) GetAccountDetails(ctx context.Context, accountNu
 		return nil, err
 	}
 	if resp.StatusCode != successCode {
-		return nil, fmt.Errorf("core banking: %v (%v)", resp.StatusDescription, resp.ErrorCode)
+		return nil, fmt.Errorf("core banking: %s (%s)", resp.StatusDescription, resp.ErrorCode)
 	}
 
 	balance, err := intrabank.ParseMoney(resp.AccountData.Balance)
@@ -90,7 +90,7 @@ func (cb *IntrabankCoreBanking) PerformOverbooking(ctx context.Context, req *int
 		return nil, err
 	}
 	if ovb.Code != "00" {
-		return nil, fmt.Errorf("core banking overbook failed: %v (%v)", ovb.Description, ovb.Code)
+		return nil, fmt.Errorf("core banking overbook failed: %s (%s)", ovb.Description, ovb.Code)
 	}
 	return &intrabank.OverbookingResult{
 		JournalSequence:      ovb.JournalSequence,

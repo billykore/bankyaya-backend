@@ -14,7 +14,7 @@ type OTPRequest struct {
 }
 
 type OTPResponse struct {
-	ID        int64        `json:"id"`
+	ID        uint64       `json:"id"`
 	Code      string       `json:"code"`
 	Channel   string       `json:"channel"`
 	Purpose   string       `json:"purpose"`
