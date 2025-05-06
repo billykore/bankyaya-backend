@@ -40,8 +40,8 @@ func (r *UserRepo) GetUserByPhoneNumber(ctx context.Context, phoneNumber string)
 		PhoneNumber:   u.PhoneNumber,
 		NIK:           u.KTPNumber,
 		Device: &user.Device{
-			FirebaseId:    u.AuthData.FirebaseId,
-			DeviceId:      u.AuthData.DeviceId,
+			FirebaseID:    u.AuthData.FirebaseID,
+			DeviceID:      u.AuthData.DeviceID,
 			IsBlacklisted: u.AuthData.Device.IsBlacklisted(),
 		},
 	}, nil

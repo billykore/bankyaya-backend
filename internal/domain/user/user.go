@@ -26,24 +26,24 @@ type User struct {
 // The Device represents a user's device information used for authentication,
 // push notifications, and security checks.
 type Device struct {
-	FirebaseId    string
-	DeviceId      string
+	FirebaseID    string
+	DeviceID      string
 	IsBlacklisted bool
 }
 
 // Valid checks whether the provided device credentials match the device's credentials.
-func (d *Device) Valid(firebaseId string, deviceId string) bool {
-	return d.ValidFirebaseId(firebaseId) && d.ValidDeviceId(deviceId)
+func (d *Device) Valid(firebaseID string, deviceID string) bool {
+	return d.ValidFirebaseID(firebaseID) && d.ValidDeviceID(deviceID)
 }
 
-// ValidFirebaseId checks whether the provided Firebase ID matches the device's Firebase ID.
-func (d *Device) ValidFirebaseId(firebaseId string) bool {
-	return firebaseId == d.FirebaseId
+// ValidFirebaseID checks whether the provided Firebase ID matches the device's Firebase ID.
+func (d *Device) ValidFirebaseID(firebaseID string) bool {
+	return firebaseID == d.FirebaseID
 }
 
-// ValidDeviceId checks whether the provided device ID matches the device's ID.
-func (d *Device) ValidDeviceId(deviceId string) bool {
-	return deviceId == d.DeviceId
+// ValidDeviceID checks whether the provided device ID matches the device's ID.
+func (d *Device) ValidDeviceID(deviceID string) bool {
+	return deviceID == d.DeviceID
 }
 
 // The Token represents an authentication token issued to a user or client.

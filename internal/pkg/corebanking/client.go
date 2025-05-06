@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -94,7 +93,12 @@ func (c *Client) token(ctx context.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer res.Body.Close()
+	defer func() {
+		err := res.Body.Close()
+		if err != nil {
+			return
+		}
+	}()
 
 	if res.StatusCode != http.StatusOK {
 		return "", errors.New(res.Status)
@@ -110,7 +114,7 @@ func (c *Client) token(ctx context.Context) (string, error) {
 
 // executeRequest is a common helper for sending requests and handling responses.
 func (c *Client) executeRequest(ctx context.Context, method, endpoint string, body any, response any) error {
-	fullUrl := c.url + endpoint
+	fullURL := c.url + endpoint
 
 	// Marshal body if provided
 	var reqBody []byte
@@ -123,7 +127,7 @@ func (c *Client) executeRequest(ctx context.Context, method, endpoint string, bo
 	}
 
 	// Create HTTP request
-	req, err := http.NewRequestWithContext(ctx, method, fullUrl, bytes.NewBuffer(reqBody))
+	req, err := http.NewRequestWithContext(ctx, method, fullURL, bytes.NewBuffer(reqBody))
 	if err != nil {
 		return err
 	}
@@ -133,7 +137,7 @@ func (c *Client) executeRequest(ctx context.Context, method, endpoint string, bo
 	if err != nil {
 		return err
 	}
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
+	req.Header.Add("Authorization", "Bearer "+token)
 	req.Header.Add("Content-Type", "application/json")
 
 	// Perform HTTP request
@@ -141,7 +145,12 @@ func (c *Client) executeRequest(ctx context.Context, method, endpoint string, bo
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
+	defer func() {
+		err := res.Body.Close()
+		if err != nil {
+			return
+		}
+	}()
 
 	if res.StatusCode != http.StatusOK {
 		return errors.New(res.Status)

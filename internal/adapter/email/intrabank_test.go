@@ -23,7 +23,7 @@ func TestParseIntrabankTemplate(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, tmpl)
 
-	receiptHtml := []byte(`<!DOCTYPE html>
+	receiptHTML := []byte(`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -59,5 +59,5 @@ func TestParseIntrabankTemplate(t *testing.T) {
 </body>
 </html>`)
 
-	assert.Equal(t, receiptHtml, tmpl)
+	assert.Equal(t, receiptHTML, tmpl)
 }

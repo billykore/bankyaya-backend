@@ -8,7 +8,7 @@ import (
 	"go.bankyaya.org/app/backend/internal/pkg/constant"
 	"go.bankyaya.org/app/backend/internal/pkg/ctxt"
 	"go.bankyaya.org/app/backend/internal/pkg/logger"
-	"go.bankyaya.org/app/backend/internal/pkg/status"
+	"go.bankyaya.org/app/backend/internal/pkg/pkgerror"
 )
 
 const (
@@ -51,56 +51,56 @@ func (s *Service) Inquiry(ctx context.Context, seq *Sequence) (*Sequence, error)
 	coreStatus, err := s.corebanking.GetCoreStatus(ctx)
 	if err != nil {
 		s.log.DomainUsecase(domainName, "Inquiry").Errorf("CheckEOD: %v", err)
-		return nil, status.Error(codes.Internal, ErrGeneral)
+		return nil, pkgerror.New(codes.Internal, ErrGeneral)
 	}
 	if coreStatus.IsEODRunning() {
 		s.log.DomainUsecase(domainName, "Inquiry").Errorf("CheckEOD: %v", ErrEODInProgress)
-		return nil, status.Error(codes.Internal, ErrEODInProgress)
+		return nil, pkgerror.New(codes.Internal, ErrEODInProgress)
 	}
 
 	intrabankLimit, err := s.repo.GetTransactionLimit(ctx)
 	if err != nil {
 		s.log.DomainUsecase(domainName, "Inquiry").Errorf("GetTransactionLimit: %v", err)
-		return nil, status.Error(codes.Internal, ErrGeneral)
+		return nil, pkgerror.New(codes.Internal, ErrGeneral)
 	}
 	if !intrabankLimit.CanTransfer(seq.Amount) {
 		s.log.DomainUsecase(domainName, "Inquiry").Error(ErrInvalidAmount)
-		return nil, status.Error(codes.BadRequest, ErrInvalidAmount)
+		return nil, pkgerror.New(codes.BadRequest, ErrInvalidAmount)
 	}
 
 	srcAccount, err := s.corebanking.GetAccountDetails(ctx, seq.SourceAccount)
 	if err != nil {
 		s.log.DomainUsecase(domainName, "Inquiry").Errorf("GetAccountDetails: %v", err)
-		return nil, status.Error(codes.Internal, ErrGeneral)
+		return nil, pkgerror.New(codes.Internal, ErrGeneral)
 	}
 	if !srcAccount.IsAccountActive() {
 		s.log.DomainUsecase(domainName, "Inquiry").Errorf("source account (%v) not active", seq.SourceAccount)
-		return nil, status.Error(codes.BadRequest, ErrSourceAccountInactive)
+		return nil, pkgerror.New(codes.BadRequest, ErrSourceAccountInactive)
 	}
 	seq.SourceName = srcAccount.Name
 
 	destAccount, err := s.corebanking.GetAccountDetails(ctx, seq.DestinationAccount)
 	if err != nil {
 		s.log.DomainUsecase(domainName, "Inquiry").Errorf("GetAccountDetails: %v", err)
-		return nil, status.Error(codes.Internal, ErrGeneral)
+		return nil, pkgerror.New(codes.Internal, ErrGeneral)
 	}
 	if !destAccount.IsAccountActive() {
 		s.log.DomainUsecase(domainName, "Inquiry").Errorf("GetAccountDetails: %v", err)
-		return nil, status.Error(codes.BadRequest, ErrDestinationAccountInactive)
+		return nil, pkgerror.New(codes.BadRequest, ErrDestinationAccountInactive)
 	}
 	seq.DestinationName = destAccount.Name
 
 	sequenceNo, err := s.seqGen.Generate()
 	if err != nil {
 		s.log.DomainUsecase(domainName, "Inquiry").Errorf("Generate failed: %v", err)
-		return nil, status.Error(codes.Internal, ErrGeneral)
+		return nil, pkgerror.New(codes.Internal, ErrGeneral)
 	}
 	seq.SequenceNumber = sequenceNo
 
 	err = s.repo.InsertSequence(ctx, seq)
 	if err != nil {
 		s.log.DomainUsecase(domainName, "Inquiry").Errorf("InsertSequence: %v", err)
-		return nil, status.Error(codes.Internal, ErrGeneral)
+		return nil, pkgerror.New(codes.Internal, ErrGeneral)
 	}
 
 	return seq, nil
@@ -110,31 +110,31 @@ func (s *Service) DoPayment(ctx context.Context, sequenceNumber string) (*Transa
 	coreStatus, err := s.corebanking.GetCoreStatus(ctx)
 	if err != nil {
 		s.log.DomainUsecase(domainName, "DoPayment").Errorf("CheckEOD: %v", err)
-		return nil, status.Error(codes.Internal, ErrGeneral)
+		return nil, pkgerror.New(codes.Internal, ErrGeneral)
 	}
 	if coreStatus.IsEODRunning() {
 		s.log.DomainUsecase(domainName, "DoPayment").Errorf("CheckEOD: %v", ErrEODInProgress)
-		return nil, status.Error(codes.Internal, ErrEODInProgress)
+		return nil, pkgerror.New(codes.Internal, ErrEODInProgress)
 	}
 
 	sequence, err := s.repo.GetSequence(ctx, sequenceNumber)
 	if err != nil {
 		s.log.DomainUsecase(domainName, "DoPayment").Errorf("GetSequence: %v", err)
-		return nil, status.Error(codes.Internal, ErrGeneral)
+		return nil, pkgerror.New(codes.Internal, ErrGeneral)
 	}
 	if !sequence.Valid(sequenceNumber) {
 		s.log.DomainUsecase(domainName, "DoPayment").Errorf("GetSequence: %v", ErrInvalidSequenceNumber)
-		return nil, status.Error(codes.BadRequest, ErrInvalidSequenceNumber)
+		return nil, pkgerror.New(codes.BadRequest, ErrInvalidSequenceNumber)
 	}
 
 	intrabankLimit, err := s.repo.GetTransactionLimit(ctx)
 	if err != nil {
 		s.log.DomainUsecase(domainName, "DoPayment").Errorf("GetTransactionLimit: %v", err)
-		return nil, status.Error(codes.Internal, ErrGeneral)
+		return nil, pkgerror.New(codes.Internal, ErrGeneral)
 	}
 	if !intrabankLimit.CanTransfer(sequence.Amount) {
 		s.log.DomainUsecase(domainName, "DoPayment").Error(ErrInvalidAmount)
-		return nil, status.Error(codes.BadRequest, ErrInvalidAmount)
+		return nil, pkgerror.New(codes.BadRequest, ErrInvalidAmount)
 	}
 
 	result, err := s.corebanking.PerformOverbooking(ctx, &OverbookingInput{
@@ -146,13 +146,13 @@ func (s *Service) DoPayment(ctx context.Context, sequenceNumber string) (*Transa
 	})
 	if err != nil {
 		s.log.DomainUsecase(domainName, "DoPayment").Errorf("PerformOverbooking: %v", err)
-		return nil, status.Error(codes.Internal, ErrGeneral)
+		return nil, pkgerror.New(codes.Internal, ErrGeneral)
 	}
 
 	user, ok := ctxt.UserFromContext(ctx)
 	if !ok {
 		s.log.DomainUsecase(domainName, "DoPayment").Errorf("GetUserFromContext: %v", ctxt.ErrUserFromContext)
-		return nil, status.Error(codes.Unauthenticated, ErrUnauthenticatedUser)
+		return nil, pkgerror.New(codes.Unauthenticated, ErrUnauthenticatedUser)
 	}
 
 	transaction := &Transaction{
@@ -171,7 +171,7 @@ func (s *Service) DoPayment(ctx context.Context, sequenceNumber string) (*Transa
 	err = s.repo.InsertTransaction(ctx, transaction)
 	if err != nil {
 		s.log.DomainUsecase(domainName, "DoPayment").Errorf("InsertTransaction: %v", err)
-		return nil, status.Error(codes.Internal, ErrGeneral)
+		return nil, pkgerror.New(codes.Internal, ErrGeneral)
 	}
 
 	err = s.mailer.SendReceipt(ctx, &EmailData{
@@ -189,7 +189,7 @@ func (s *Service) DoPayment(ctx context.Context, sequenceNumber string) (*Transa
 	})
 	if err != nil {
 		s.log.DomainUsecase(domainName, "DoPayment").Errorf("SendReceipt: %v", err)
-		return nil, status.Error(codes.Internal, ErrSendEmailFailed)
+		return nil, pkgerror.New(codes.Internal, ErrSendEmailFailed)
 	}
 
 	err = s.notifier.Notify(ctx, &Notification{
@@ -200,7 +200,7 @@ func (s *Service) DoPayment(ctx context.Context, sequenceNumber string) (*Transa
 	})
 	if err != nil {
 		s.log.DomainUsecase(domainName, "DoPayment").Errorf("Notify: %v", err)
-		return nil, status.Error(codes.Internal, ErrNotifyFailed)
+		return nil, pkgerror.New(codes.Internal, ErrNotifyFailed)
 	}
 
 	return transaction, nil

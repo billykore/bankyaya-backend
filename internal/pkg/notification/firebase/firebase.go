@@ -9,8 +9,10 @@ import (
 	"go.bankyaya.org/app/backend/internal/pkg/logger"
 )
 
+const timeout = 10 * time.Second
+
 type Message struct {
-	FirebaseId string
+	FirebaseID string
 	Title      string
 	Body       string
 }
@@ -26,18 +28,19 @@ func New() *Client {
 func newClient() *Client {
 	log := logger.New()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	app, err := firebase.NewApp(ctx, nil)
+	app, err := firebase.NewApp(ctx, &firebase.Config{})
 	if err != nil {
-		log.Fatalf("failed to initialize firebase app: %v", err)
+		log.Errorf("failed to initialize firebase app: %v", err)
 		return nil
 	}
 
 	fcmClient, err := app.Messaging(ctx)
 	if err != nil {
-		log.Fatalf("failed to initialize firebase messaging client: %v", err)
+		log.Errorf("failed to initialize firebase messaging client: %v", err)
+		return nil
 	}
 
 	return &Client{
@@ -47,7 +50,7 @@ func newClient() *Client {
 
 func (c *Client) Send(ctx context.Context, message *Message) error {
 	_, err := c.fcmClient.Send(ctx, &messaging.Message{
-		Token: message.FirebaseId,
+		Token: message.FirebaseID,
 		Notification: &messaging.Notification{
 			Title: message.Title,
 			Body:  message.Body,

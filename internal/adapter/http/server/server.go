@@ -56,6 +56,16 @@ func NewRouter(
 	}
 }
 
+// Run runs the server.
+func (r *Router) Run() {
+	r.useMiddlewares()
+	r.swagger()
+	r.setTransferRoutes()
+	r.setUserRoutes()
+	r.setOTPRoutes()
+	r.run()
+}
+
 func (r *Router) useMiddlewares() {
 	r.router.Use(echomiddleware.Logger())
 	r.router.Use(echomiddleware.Recover())
@@ -71,15 +81,6 @@ func (r *Router) run() {
 	if err := r.router.Start(":" + port); err != nil {
 		r.log.Fatalf("failed to run on port [::%v]", port)
 	}
-}
-
-// Run runs the server.
-func (r *Router) Run() {
-	r.useMiddlewares()
-	r.swagger()
-	r.setTransferRoutes()
-	r.setUserRoutes()
-	r.run()
 }
 
 func (r *Router) setTransferRoutes() {

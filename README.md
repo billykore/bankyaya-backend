@@ -16,22 +16,14 @@ https://netflixtechblog.com/ready-for-changes-with-hexagonal-architecture-b315ec
 │   │   ├── api/        # External API handlers.
 │   │   ├── email/      # Email domain handlers.
 │   │   ├── http/       # App server (Handlers, Routers).
-│   │   ├── messaging/  # Message broker  implementation (RabbitMQ, Kafka, etc.).
 │   │   ├── storage/    # Database implementation (Postgres, Redis, etc.).
 │   │   └── ...         # Other adapters.
-│   ├── application/    # Frameworks, database, and external APIs implementations.
-│   │   ├── qrisAPI/       # QRIS payment usecase.
-│   │   ├── scheduler/  # Transaction scheduler usecase.
-│   │   ├── transfer/   # Intra-bank transfer usecase.
+│   ├── domain/         # Core business logic (Entities, Value Objects, Aggregates, Interfaces).
+│   │   ├── intrabank/  # Intra-bank transfer usecase.
+│   │   ├── otp/        # OTP usecase.
 │   │   ├── user/       # User usecase.
 │   │   └── ...         # Other domains.
-│   └── core/           # Core usecase logic (Entities, Value Objects, Aggregates, Interfaces).
-│       ├── qrisAPI/       # QRIS payment usecase.
-│       ├── scheduler/  # Transaction scheduler usecase.
-│       ├── transfer/   # Intra-bank transfer usecase.
-│       ├── user/       # User usecase.
-│       └── ...         # Other domains.
-├── pkg/                # Shared libraries or utilities.
+│   └── pkg/            # Shared libraries or utilities.
 ├── script/             # Utility scripts.
 ├── .gitignore          # .gitignore file.
 ├── Dockerfile          # Application Dockerfile.

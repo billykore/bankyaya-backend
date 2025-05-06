@@ -1,7 +1,7 @@
 package model
 
 type TransactionMethod struct {
-	Id                  int    `gorm:"column:ID"`
+	ID                  int    `gorm:"column:ID"`
 	Name                string `gorm:"column:NAME"`
 	Status              string `gorm:"column:STATUS"`
 	Fee                 int    `gorm:"column:FEE"`

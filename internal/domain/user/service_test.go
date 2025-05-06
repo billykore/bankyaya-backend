@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"go.bankyaya.org/app/backend/internal/pkg/codes"
 	"go.bankyaya.org/app/backend/internal/pkg/logger"
-	"go.bankyaya.org/app/backend/internal/pkg/status"
+	"go.bankyaya.org/app/backend/internal/pkg/pkgerror"
 )
 
 func TestSuccessLogin(t *testing.T) {
@@ -25,8 +25,8 @@ func TestSuccessLogin(t *testing.T) {
 		Return(&User{
 			Password: "password",
 			Device: &Device{
-				FirebaseId: "123",
-				DeviceId:   "456",
+				FirebaseID: "123",
+				DeviceID:   "456",
 			},
 		}, nil)
 
@@ -43,8 +43,8 @@ func TestSuccessLogin(t *testing.T) {
 		Password:    "password",
 		PhoneNumber: "081338442777",
 		Device: &Device{
-			FirebaseId: "123",
-			DeviceId:   "456",
+			FirebaseID: "123",
+			DeviceID:   "456",
 		},
 	})
 
@@ -70,13 +70,13 @@ func TestLoginFailed_UserNotFound(t *testing.T) {
 	token, err := svc.Login(context.Background(), &User{
 		PhoneNumber: "081338000000",
 		Device: &Device{
-			FirebaseId: "123",
-			DeviceId:   "456",
+			FirebaseID: "123",
+			DeviceID:   "456",
 		},
 	})
 
 	assert.Nil(t, token)
-	assert.Equal(t, err, status.Error(codes.NotFound, ErrUserNotFound))
+	assert.Equal(t, err, pkgerror.New(codes.NotFound, ErrUserNotFound))
 
 	repoMock.AssertExpectations(t)
 }
@@ -92,8 +92,8 @@ func TestLoginFailed_UserBlacklisted(t *testing.T) {
 	repoMock.EXPECT().GetUserByPhoneNumber(mock.Anything, "081338000001").
 		Return(&User{
 			Device: &Device{
-				FirebaseId:    "123",
-				DeviceId:      "456",
+				FirebaseID:    "123",
+				DeviceID:      "456",
 				IsBlacklisted: true,
 			},
 		}, nil)
@@ -101,13 +101,13 @@ func TestLoginFailed_UserBlacklisted(t *testing.T) {
 	token, err := svc.Login(context.Background(), &User{
 		PhoneNumber: "081338000001",
 		Device: &Device{
-			FirebaseId: "123",
-			DeviceId:   "456",
+			FirebaseID: "123",
+			DeviceID:   "456",
 		},
 	})
 
 	assert.Nil(t, token)
-	assert.Equal(t, err, status.Error(codes.Forbidden, ErrDeviceIsBlacklisted))
+	assert.Equal(t, err, pkgerror.New(codes.Forbidden, ErrDeviceIsBlacklisted))
 
 	repoMock.AssertExpectations(t)
 }
@@ -123,21 +123,21 @@ func TestLoginFailed_InvalidDevice(t *testing.T) {
 	repoMock.EXPECT().GetUserByPhoneNumber(mock.Anything, "081338000002").
 		Return(&User{
 			Device: &Device{
-				FirebaseId: "321",
-				DeviceId:   "654",
+				FirebaseID: "321",
+				DeviceID:   "654",
 			},
 		}, nil)
 
 	token, err := svc.Login(context.Background(), &User{
 		PhoneNumber: "081338000002",
 		Device: &Device{
-			FirebaseId: "123",
-			DeviceId:   "456",
+			FirebaseID: "123",
+			DeviceID:   "456",
 		},
 	})
 
 	assert.Nil(t, token)
-	assert.Equal(t, err, status.Error(codes.Forbidden, ErrInvalidDevice))
+	assert.Equal(t, err, pkgerror.New(codes.Forbidden, ErrInvalidDevice))
 
 	repoMock.AssertExpectations(t)
 }
@@ -154,8 +154,8 @@ func TestLoginFailed_InvalidPassword(t *testing.T) {
 		Return(&User{
 			Password: "password",
 			Device: &Device{
-				FirebaseId: "123",
-				DeviceId:   "456",
+				FirebaseID: "123",
+				DeviceID:   "456",
 			},
 		}, nil)
 
@@ -166,13 +166,13 @@ func TestLoginFailed_InvalidPassword(t *testing.T) {
 		PhoneNumber: "081338000003",
 		Password:    "invalid-password",
 		Device: &Device{
-			FirebaseId: "123",
-			DeviceId:   "456",
+			FirebaseID: "123",
+			DeviceID:   "456",
 		},
 	})
 
 	assert.Nil(t, token)
-	assert.Equal(t, err, status.Error(codes.BadRequest, ErrInvalidPassword))
+	assert.Equal(t, err, pkgerror.New(codes.BadRequest, ErrInvalidPassword))
 
 	repoMock.AssertExpectations(t)
 	hasherMock.AssertExpectations(t)
@@ -191,8 +191,8 @@ func TestLoginFailed_CreateTokenFailed(t *testing.T) {
 		Return(&User{
 			Password: "password",
 			Device: &Device{
-				FirebaseId: "123",
-				DeviceId:   "456",
+				FirebaseID: "123",
+				DeviceID:   "456",
 			},
 		}, nil)
 
@@ -206,13 +206,13 @@ func TestLoginFailed_CreateTokenFailed(t *testing.T) {
 		Password:    "password",
 		PhoneNumber: "081338442777",
 		Device: &Device{
-			FirebaseId: "123",
-			DeviceId:   "456",
+			FirebaseID: "123",
+			DeviceID:   "456",
 		},
 	})
 
 	assert.Nil(t, token)
-	assert.Equal(t, err, status.Error(codes.Internal, ErrCreateTokenFailed))
+	assert.Equal(t, err, pkgerror.New(codes.Internal, ErrCreateTokenFailed))
 
 	repoMock.AssertExpectations(t)
 	hasherMock.AssertExpectations(t)

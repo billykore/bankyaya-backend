@@ -9,8 +9,8 @@ import (
 type LoginRequest struct {
 	Phone      string `json:"phone" validate:"required,phonenumber"`
 	Password   string `json:"password" validate:"required"`
-	DeviceId   string `json:"deviceId" validate:"required"`
-	FirebaseId string `json:"firebaseId" validate:"required"`
+	DeviceID   string `json:"deviceID" validate:"required"`
+	FirebaseID string `json:"firebaseID" validate:"required"`
 }
 
 func (r *LoginRequest) ToUser() *user.User {

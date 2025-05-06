@@ -5,9 +5,15 @@ import (
 	"errors"
 )
 
-var ErrUserFromContext = errors.New("failed to get user from context")
+type ContextKey string
 
-const UserContextKey = "user"
+const UserContextKey ContextKey = "user"
+
+func (c ContextKey) String() string {
+	return string(c)
+}
+
+var ErrUserFromContext = errors.New("failed to get user from context")
 
 type User struct {
 	ID    int
