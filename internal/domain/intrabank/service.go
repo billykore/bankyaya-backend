@@ -65,7 +65,8 @@ func (s *Service) Inquiry(ctx context.Context, seq *Sequence) (*Sequence, error)
 	}
 	if !intrabankLimit.CanTransfer(seq.Amount) {
 		s.log.DomainUsecase(domainName, "Inquiry").Error(ErrInvalidAmount)
-		return nil, pkgerror.New(codes.BadRequest, ErrInvalidAmount)
+		return nil, pkgerror.New(codes.BadRequest, ErrInvalidAmount).
+			SetMsg("Your transfer amount is too high. Please try again with a lower amount.")
 	}
 
 	srcAccount, err := s.corebanking.GetAccountDetails(ctx, seq.SourceAccount)
@@ -88,6 +89,7 @@ func (s *Service) Inquiry(ctx context.Context, seq *Sequence) (*Sequence, error)
 		s.log.DomainUsecase(domainName, "Inquiry").Errorf("GetAccountDetails: %v", err)
 		return nil, pkgerror.New(codes.BadRequest, ErrDestinationAccountInactive)
 	}
+
 	seq.DestinationName = destAccount.Name
 
 	sequenceNo, err := s.seqGen.Generate()
@@ -95,6 +97,7 @@ func (s *Service) Inquiry(ctx context.Context, seq *Sequence) (*Sequence, error)
 		s.log.DomainUsecase(domainName, "Inquiry").Errorf("Generate failed: %v", err)
 		return nil, pkgerror.New(codes.Internal, ErrGeneral)
 	}
+
 	seq.SequenceNumber = sequenceNo
 
 	err = s.repo.InsertSequence(ctx, seq)
@@ -124,7 +127,8 @@ func (s *Service) DoPayment(ctx context.Context, sequenceNumber string) (*Transa
 	}
 	if !sequence.Valid(sequenceNumber) {
 		s.log.DomainUsecase(domainName, "DoPayment").Errorf("GetSequence: %v", ErrInvalidSequenceNumber)
-		return nil, pkgerror.New(codes.BadRequest, ErrInvalidSequenceNumber)
+		return nil, pkgerror.New(codes.BadRequest, ErrInvalidSequenceNumber).
+			SetMsg("Your transfer request was rejected. Please try again.")
 	}
 
 	intrabankLimit, err := s.repo.GetTransactionLimit(ctx)
@@ -134,7 +138,8 @@ func (s *Service) DoPayment(ctx context.Context, sequenceNumber string) (*Transa
 	}
 	if !intrabankLimit.CanTransfer(sequence.Amount) {
 		s.log.DomainUsecase(domainName, "DoPayment").Error(ErrInvalidAmount)
-		return nil, pkgerror.New(codes.BadRequest, ErrInvalidAmount)
+		return nil, pkgerror.New(codes.BadRequest, ErrInvalidAmount).
+			SetMsg("Your transfer amount is too high. Please try again with a lower amount.")
 	}
 
 	result, err := s.corebanking.PerformOverbooking(ctx, &OverbookingInput{
@@ -152,7 +157,8 @@ func (s *Service) DoPayment(ctx context.Context, sequenceNumber string) (*Transa
 	user, ok := ctxt.UserFromContext(ctx)
 	if !ok {
 		s.log.DomainUsecase(domainName, "DoPayment").Errorf("GetUserFromContext: %v", ctxt.ErrUserFromContext)
-		return nil, pkgerror.New(codes.Unauthenticated, ErrUnauthenticatedUser)
+		return nil, pkgerror.New(codes.Unauthenticated, ErrUnauthenticatedUser).
+			SetMsg("Please login to continue.")
 	}
 
 	transaction := &Transaction{

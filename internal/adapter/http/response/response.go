@@ -10,6 +10,7 @@ import (
 
 type Response struct {
 	Status     string `json:"status,omitempty"`
+	Error      error  `json:"error,omitempty"`
 	Message    string `json:"message,omitempty"`
 	Data       any    `json:"data,omitempty"`
 	ServerTime string `json:"serverTime,omitempty"`
@@ -26,11 +27,11 @@ func Success(data any) (int, *Response) {
 
 // Error returns error status code and error.
 func Error(err error) (int, *Response) {
-	var s *pkgerror.Error
-	if errors.As(err, &s) {
-		return responseCode[s.Code], &Response{
-			Status:     responseStatus[s.Code],
-			Message:    s.Error(),
+	var e *pkgerror.Error
+	if errors.As(err, &e) {
+		return responseCode[e.Code], &Response{
+			Status:     responseStatus[e.Code],
+			Message:    e.Msg,
 			ServerTime: currentServerTime(),
 		}
 	}

@@ -35,27 +35,32 @@ func (u *Service) Login(ctx context.Context, input *User) (*Token, error) {
 	user, err := u.repo.GetUserByPhoneNumber(ctx, input.PhoneNumber)
 	if err != nil {
 		u.log.DomainUsecase(domainName, "Login").Errorf("GetUserByPhoneNumber: %v", err)
-		return nil, pkgerror.New(codes.NotFound, ErrUserNotFound)
+		return nil, pkgerror.New(codes.NotFound, ErrUserNotFound).
+			SetMsg("User not found. Please register your account first.")
 	}
 	if user.Device.IsBlacklisted {
-		u.log.DomainUsecase(domainName, "Login").Errorf("user device is blacklisted")
-		return nil, pkgerror.New(codes.Forbidden, ErrDeviceIsBlacklisted)
+		u.log.DomainUsecase(domainName, "Login").Error(ErrDeviceIsBlacklisted)
+		return nil, pkgerror.New(codes.Forbidden, ErrDeviceIsBlacklisted).
+			SetMsg("Device is blacklisted. Please contact support.")
 	}
 	if !user.Device.Valid(input.Device.FirebaseID, input.Device.DeviceID) {
-		u.log.DomainUsecase(domainName, "Login").Errorf("invalid device credentials")
-		return nil, pkgerror.New(codes.Forbidden, ErrInvalidDevice)
+		u.log.DomainUsecase(domainName, "Login").Error(ErrInvalidDevice)
+		return nil, pkgerror.New(codes.Forbidden, ErrInvalidDevice).
+			SetMsg("Device is not registered. Please register your device first.")
 	}
 
 	matched := u.passwordHasher.Compare(input.Password, user.Password)
 	if !matched {
-		u.log.DomainUsecase(domainName, "Login").Errorf("invalid password")
-		return nil, pkgerror.New(codes.BadRequest, ErrInvalidPassword)
+		u.log.DomainUsecase(domainName, "Login").Error(ErrInvalidPassword)
+		return nil, pkgerror.New(codes.BadRequest, ErrInvalidPassword).
+			SetMsg("Password is incorrect. Please try again.")
 	}
 
 	token, err := u.tokenService.Create(input, tokenExpiredTime)
 	if err != nil {
 		u.log.DomainUsecase(domainName, "Login").Errorf("Create token: %v", err)
-		return nil, pkgerror.New(codes.Internal, ErrCreateTokenFailed)
+		return nil, pkgerror.New(codes.Internal, ErrCreateTokenFailed).
+			SetMsg("Login failed. Please try again later.")
 	}
 
 	return token, nil

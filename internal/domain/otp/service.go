@@ -41,7 +41,8 @@ func (s *Service) Send(ctx context.Context, purpose Purpose, channel Channel) (*
 	user, ok := ctxt.UserFromContext(ctx)
 	if !ok {
 		s.log.DomainUsecase(domainName, "Send").Error(ctxt.ErrUserFromContext)
-		return nil, pkgerror.New(codes.Unauthenticated, ErrUnauthenticatedUser)
+		return nil, pkgerror.New(codes.Unauthenticated, ErrUnauthenticatedUser).
+			SetMsg("Please login to continue.")
 	}
 
 	code, err := s.generator.Generate(otpLength)
@@ -98,15 +99,18 @@ func (s *Service) Verify(ctx context.Context, in *OTP) error {
 	}
 	if !otp.Equal(in) {
 		s.log.DomainUsecase(domainName, "Verify").Error(ErrInvalidOTP)
-		return pkgerror.New(codes.BadRequest, ErrInvalidOTP)
+		return pkgerror.New(codes.BadRequest, ErrInvalidOTP).
+			SetMsg("Invalid OTP. Please try again.")
 	}
 	if otp.IsVerified() {
 		s.log.DomainUsecase(domainName, "Verify").Error(ErrOTPAlreadyUsed)
-		return pkgerror.New(codes.BadRequest, ErrOTPAlreadyUsed)
+		return pkgerror.New(codes.BadRequest, ErrOTPAlreadyUsed).
+			SetMsg("OTP already used. Please try again.")
 	}
 	if otp.IsExpired(time.Now()) {
 		s.log.DomainUsecase(domainName, "Verify").Error(ErrOTPExpired)
-		return pkgerror.New(codes.BadRequest, ErrOTPExpired)
+		return pkgerror.New(codes.BadRequest, ErrOTPExpired).
+			SetMsg("OTP expired. Please try again.")
 	}
 
 	otp.VerifiedAt = time.Now()
