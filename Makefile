@@ -55,3 +55,10 @@ lint:
 .PHONY: generate-mocks
 generate-mocks:
 	@./scripts/mocks.sh
+
+# Example:
+# make run-test
+.PHONY: run-test
+run-test:
+	@go test ./internal/domain/...
+

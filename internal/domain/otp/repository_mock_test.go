@@ -22,7 +22,7 @@ func (_m *MockRepository) EXPECT() *MockRepository_Expecter {
 }
 
 // Get provides a mock function with given fields: ctx, id
-func (_m *MockRepository) Get(ctx context.Context, id uint64) (*OTP, error) {
+func (_m *MockRepository) Get(ctx context.Context, id int) (*OTP, error) {
 	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
@@ -31,10 +31,10 @@ func (_m *MockRepository) Get(ctx context.Context, id uint64) (*OTP, error) {
 
 	var r0 *OTP
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uint64) (*OTP, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int) (*OTP, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uint64) *OTP); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int) *OTP); ok {
 		r0 = rf(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
@@ -42,7 +42,7 @@ func (_m *MockRepository) Get(ctx context.Context, id uint64) (*OTP, error) {
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, uint64) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
 		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
@@ -58,14 +58,14 @@ type MockRepository_Get_Call struct {
 
 // Get is a helper method to define mock.On call
 //   - ctx context.Context
-//   - id uint64
+//   - id int
 func (_e *MockRepository_Expecter) Get(ctx interface{}, id interface{}) *MockRepository_Get_Call {
 	return &MockRepository_Get_Call{Call: _e.mock.On("Get", ctx, id)}
 }
 
-func (_c *MockRepository_Get_Call) Run(run func(ctx context.Context, id uint64)) *MockRepository_Get_Call {
+func (_c *MockRepository_Get_Call) Run(run func(ctx context.Context, id int)) *MockRepository_Get_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(uint64))
+		run(args[0].(context.Context), args[1].(int))
 	})
 	return _c
 }
@@ -75,7 +75,7 @@ func (_c *MockRepository_Get_Call) Return(_a0 *OTP, _a1 error) *MockRepository_G
 	return _c
 }
 
-func (_c *MockRepository_Get_Call) RunAndReturn(run func(context.Context, uint64) (*OTP, error)) *MockRepository_Get_Call {
+func (_c *MockRepository_Get_Call) RunAndReturn(run func(context.Context, int) (*OTP, error)) *MockRepository_Get_Call {
 	_c.Call.Return(run)
 	return _c
 }

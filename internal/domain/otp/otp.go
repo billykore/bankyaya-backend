@@ -48,7 +48,7 @@ func (c Channel) String() string {
 
 // OTP represents a one-time password used for authentication or verification.
 type OTP struct {
-	ID         uint64
+	ID         int
 	Code       string
 	Purpose    Purpose
 	Channel    Channel

@@ -2,16 +2,16 @@ package model
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type OTP struct {
-	gorm.Model
+	ID         int `gorm:"primaryKey"`
 	Code       string
 	UserID     int
 	Purpose    string
 	Channel    string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 	VerifiedAt time.Time
 	ExpiredAt  time.Time
 

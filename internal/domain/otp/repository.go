@@ -12,7 +12,7 @@ type Repository interface {
 	// It takes a context and an ID as parameters.
 	// Returns the OTP entity if found,
 	// or an error if the operation fails or the OTP is not found.
-	Get(ctx context.Context, id uint64) (*OTP, error)
+	Get(ctx context.Context, id int) (*OTP, error)
 
 	// Update updates an existing OTP entity in the data storage.
 	// Returns an error if the operation fails.
