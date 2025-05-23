@@ -78,6 +78,7 @@ func (s *Service) Inquiry(ctx context.Context, seq *Sequence) (*Sequence, error)
 		s.log.DomainUsecase(domainName, "Inquiry").Errorf("source account (%v) not active", seq.SourceAccount)
 		return nil, pkgerror.New(codes.BadRequest, ErrSourceAccountInactive)
 	}
+
 	seq.SourceName = srcAccount.Name
 
 	destAccount, err := s.corebanking.GetAccountDetails(ctx, seq.DestinationAccount)
@@ -202,7 +203,7 @@ func (s *Service) DoPayment(ctx context.Context, sequenceNumber string) (*Transa
 		Subject:     transferSuccessSubject,
 		Amount:      transaction.Amount,
 		Destination: transaction.Destination,
-		Status:      SuccessStatus,
+		Status:      TransactionSuccess,
 	})
 	if err != nil {
 		s.log.DomainUsecase(domainName, "DoPayment").Errorf("Notify: %v", err)

@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "github.com/joho/godotenv/autoload"
 	_ "go.bankyaya.org/app/backend/cmd/swagger/docs"
 	"go.bankyaya.org/app/backend/internal/adapter/http/server"
 	"go.bankyaya.org/app/backend/internal/pkg/config"

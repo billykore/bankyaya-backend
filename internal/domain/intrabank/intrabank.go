@@ -14,11 +14,6 @@ import (
 	"time"
 )
 
-const (
-	SuccessStatus = "Success"
-	FailedStatus  = "Failed"
-)
-
 // Money represents a monetary value stored as a 64-bit integer.
 type Money int64
 
@@ -117,6 +112,13 @@ type Transaction struct {
 	SuccessTransactionDate  time.Time
 }
 
+const (
+	// EODStatusStarted indicates that the end-of-day process has started in the system.
+	EODStatusStarted = "STARTED"
+	// StandInStatusNotActivated indicates that the core banking system stand-in mode is not activated.
+	StandInStatusNotActivated = "N"
+)
+
 // CoreStatus represents the current status of the core banking system.
 // It includes the system date, overall system status, and the status
 // of the stand-in processing component.
@@ -128,7 +130,7 @@ type CoreStatus struct {
 
 // IsEODRunning checks if the EOD process is running and stand-in mode is not activated.
 func (s *CoreStatus) IsEODRunning() bool {
-	return s.Status == "STARTED" && s.StandInStatus == "N"
+	return s.Status == EODStatusStarted && s.StandInStatus == StandInStatusNotActivated
 }
 
 // The Account represents detailed information about a customer's bank account.
@@ -207,6 +209,13 @@ type EmailData struct {
 	Note               string
 }
 
+const (
+	// TransactionSuccess represents the status string for a successful transaction.
+	TransactionSuccess = "success"
+	// TransactionFailed represents the status string for a failed transaction.
+	TransactionFailed = "failed"
+)
+
 // Notification represents a transaction-related notification.
 type Notification struct {
 	FirebaseID  string
@@ -216,12 +225,12 @@ type Notification struct {
 	Status      string
 }
 
-// Success returns the success notification message.
+// String returns the string representation of the Notification based on its Status field.
 func (n *Notification) String() string {
 	switch n.Status {
-	case SuccessStatus:
+	case TransactionSuccess:
 		return n.success()
-	case FailedStatus:
+	case TransactionFailed:
 		return n.failed()
 	}
 	return n.success()
